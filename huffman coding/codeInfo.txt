@@ -1,0 +1,8 @@
+Frequency table:
+'b' (ASCII code: 62): frequency:   1, code: 0, P(b) = 0.500000000
+'a' (ASCII code: 61): frequency:   1, code: 1, P(a) = 0.500000000
+Entropy: 1.00000000000000000000
+Expected code length: 1.00000000000000000000
+Length of text: 16
+Length of encoded text: 2
+Compression coeff.: 8.00000000000000000000
