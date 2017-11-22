@@ -5,18 +5,17 @@
 
 struct Node;
 
-// TODO: save tree as binary code
-
 struct HuffmanTree {
     Node *root = nullptr;
     
-    HuffmanTree(const unsigned char *str);
+    HuffmanTree();
+    HuffmanTree(const char *filename);
     HuffmanTree(const BitVector &tree);
     
     ~HuffmanTree();
 
-    BitVector encode(const unsigned char *str) const;
-    unsigned char* decode(const BitVector &code) const;
+    void encode(const char *inputFile, const char *outputFile) const;
+    void decode(const char *inputFile, const char *outputFile);
     
     void saveTree(FILE *file) const;
 };

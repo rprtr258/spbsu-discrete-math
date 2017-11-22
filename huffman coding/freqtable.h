@@ -7,6 +7,7 @@ struct FrequencyTable {
     CharOccur *data = nullptr;
     int size = 0;
     
+    FrequencyTable(const char *filename);
     FrequencyTable(const unsigned char *str);
     
     ~FrequencyTable();

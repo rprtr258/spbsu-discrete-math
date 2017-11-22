@@ -65,28 +65,12 @@ Node* buildTree(const FrequencyTable &ftable) {
     return getRarestNode();
 }
 
-HuffmanTree::HuffmanTree(const unsigned char *str) {
-    FrequencyTable ftable(str);
-    root = buildTree(ftable);
+HuffmanTree::HuffmanTree() {
 }
 
-HuffmanTree::HuffmanTree(const BitVector &tree) {
-    std::stack<Node*> tmp;
-    for (unsigned int i = 0; i < tree.capacity; i++) {
-        Node* node = new Node();
-        if (tree.data[i] != separator) {
-            node->symbol = tree.data[i];
-        } else {
-            Node *r = tmp.top();
-            tmp.pop();
-            Node *l = tmp.top();
-            tmp.pop();
-            node->l = l;
-            node->r = r;
-        }
-        tmp.push(node);
-    }
-    root = tmp.top();
+HuffmanTree::HuffmanTree(const char *filename) {
+    FrequencyTable ftable(filename);
+    root = buildTree(ftable);
 }
 
 void erase(Node *node) {
@@ -101,7 +85,7 @@ HuffmanTree::~HuffmanTree() {
     erase(root);
 }
 
-int writeCodes(Node *node, BitVector *codes, BitVector &buffer, int const level = 0) {
+int writeCodes(Node *node, BitVector *codes, BitVector buffer = BitVector(), int const level = 0) {
     if (node->isLeaf()) {
         codes[(unsigned int)node->symbol] = buffer;
         return node->frequency * level;
@@ -116,46 +100,96 @@ int writeCodes(Node *node, BitVector *codes, BitVector &buffer, int const level 
     return result;
 }
 
-BitVector HuffmanTree::encode(const unsigned char *str) const {
-    unsigned int strLength = strlen((const char*)str);
+void HuffmanTree::encode(const char *inputFile, const char *outputFile) const {
+    FILE *fileInput = fopen(inputFile, "rb");
+    FILE *fileOutput = fopen(outputFile, "wb");
     
     BitVector codes[alphabet];
     
-    BitVector buffer;
-    writeCodes(root, codes, buffer);
+    int codeLength = writeCodes(root, codes);
     
-    BitVector result;
-    for (unsigned int i = 0; i < strLength; i++)
-        result.pushBack(codes[(unsigned int)str[i]]);    
-    return result;
-}
-
-void putChar(unsigned char *&str, int &size, const unsigned char &c) {
-    unsigned char *newStr = new unsigned char[size + 1];
-    if (str != nullptr) {
-        memcpy(newStr, str, size);
-        delete[] str;
-    }
-    newStr[size] = c;
+    saveTree(fileOutput);
+    fprintf(fileOutput, "%d\n", codeLength);
     
-    size++;
-    str = newStr;
-}
-
-unsigned char* HuffmanTree::decode(const BitVector &code) const {
-    unsigned char *res = nullptr;
-    int size = 0;
-    Node *tmp = root;
-    for (unsigned int i = 0; i < code.size; i++) {
-        bool bit = code.get(i);
-        tmp = (!bit ? tmp->l : tmp->r);
-        if (tmp->isLeaf()) {
-            putChar(res, size, tmp->symbol);
-            tmp = root;
+    unsigned char buffer = 0;
+    unsigned char bit = 7;
+    int symbol ='$';
+    while (symbol != EOF) {
+        symbol = fgetc(fileInput);
+        if (symbol == EOF)
+            continue;
+        for (unsigned int i = 0; i < codes[symbol].size; i++) {
+            buffer = buffer | (codes[symbol].get(i) << bit);
+            if (bit == 0) {
+                fputc(buffer, fileOutput);
+                buffer = 0;
+                bit = 7;
+            } else {
+                bit--;
+            }
         }
     }
-    putChar(res, size, '\0');
-    return res;
+    if (bit < 7) {
+        fputc(buffer, fileOutput);
+    }
+    
+    fclose(fileInput);
+    fclose(fileOutput);
+}
+
+void HuffmanTree::decode(const char *inputFile, const char *outputFile) {
+    FILE *inFile = fopen(inputFile, "rb");
+    FILE *outFile = fopen(outputFile, "wb");
+    
+    int c = '$';
+    std::stack<Node*> tmp;
+    while (c != 0) {
+        c = fgetc(inFile);
+        if (c == 0)
+            continue;
+        Node* node = new Node();
+        if (c != separator) {
+            node->symbol = c;
+        } else {
+            Node *r = tmp.top();
+            tmp.pop();
+            Node *l = tmp.top();
+            tmp.pop();
+            node->l = l;
+            node->r = r;
+        }
+        tmp.push(node);
+    }
+    root = tmp.top();
+    
+    unsigned int codeLength = 0;
+    while (c != '\n') {
+        c = fgetc(inFile);
+        if (c == '\n')
+            continue;
+        codeLength = codeLength * 10 + (c - '0');
+    }
+    
+    Node *ptr = root;
+    unsigned int j = 0;
+    
+    while (c != EOF && j < codeLength) {
+        c = fgetc(inFile);
+        if (c == EOF)
+            continue;
+        for (unsigned int i = 0; j + i < codeLength && i < 8; i++) {
+            bool bit = (c  & (1 << (7 - i)));
+            ptr = (!bit ? ptr->l : ptr->r);
+            if (ptr->isLeaf()) {
+                fputc(ptr->symbol, outFile);
+                ptr = root;
+            }
+        }
+        j += 8;
+    }
+    
+    fclose(inFile);
+    fclose(outFile);
 }
 
 void debug(Node *node, FILE *file) {
