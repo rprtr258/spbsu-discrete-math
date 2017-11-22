@@ -1,7 +1,7 @@
 #pragma once
 
 struct BitVector {
-    char *data = nullptr;
+    unsigned char *data = nullptr;
     unsigned int size = 0;
     unsigned int capacity = 0;
     

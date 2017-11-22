@@ -6,7 +6,7 @@ BitVector::BitVector(unsigned int const _size) {
     if (_size > 0) {
         size = _size;
         capacity = _size / 8 + (_size % 8 != 0);
-        data = new char[capacity];
+        data = new unsigned char[capacity];
         memset(data, 0, capacity);
     }
 }
@@ -31,14 +31,14 @@ void BitVector::set(unsigned int const &index, bool const &value) {
 
 void BitVector::pushBack(bool const &value) {
     if (size == capacity * 8) {
-        char *newData = new char[capacity + 1];
-        memset(newData, 0, capacity + 1);
+        unsigned char *newData = new unsigned char[capacity + 1000];
+        memset(newData, 0, capacity + 1000);
         if (data != nullptr) {
             memcpy(newData, data, capacity);
             delete[] data;
         }
         data = newData;
-        capacity++;
+        capacity += 1000;
     }
     set(size, value);
     size++;
@@ -55,14 +55,8 @@ void BitVector::printBytes() {
 }
 
 void BitVector::pushBack(BitVector const &other) {
-    // this->print();
-    // printf(" + ");
-    // other.print();
     for (unsigned int i = 0; i < other.size; i++)
         pushBack(other.get(i));
-    // printf(" = ");
-    // this->print();
-    // printf("\n");
 }
 
 void BitVector::popBack() {
@@ -76,7 +70,7 @@ const BitVector& BitVector::operator=(const BitVector &other) {
     size = other.size;
     capacity = other.capacity;
     
-    data = new char[other.capacity];
+    data = new unsigned char[other.capacity];
     memcpy(data, other.data, capacity);
     
     return (*this);

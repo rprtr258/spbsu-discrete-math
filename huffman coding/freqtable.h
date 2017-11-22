@@ -1,13 +1,13 @@
 #pragma once
 #include <utility>
 
-typedef std::pair<char, int> CharOccur;
+typedef std::pair<unsigned char, int> CharOccur;
 
 struct FrequencyTable {
     CharOccur *data = nullptr;
     int size = 0;
     
-    FrequencyTable(const char *str);
+    FrequencyTable(const unsigned char *str);
     
     ~FrequencyTable();
     

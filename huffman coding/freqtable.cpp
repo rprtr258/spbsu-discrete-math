@@ -1,16 +1,18 @@
 #include <string.h>
 #include <algorithm>
+#include <stdio.h>
+#include <iostream>
 #include "freqtable.h"
 
 int const alphabet = 256;
 
-FrequencyTable::FrequencyTable(const char *str) {
+FrequencyTable::FrequencyTable(const unsigned char *str) {
     int charCount[alphabet];
     for (int i = 0; i < alphabet; i++)
         charCount[i] = 0;
-    int strLength = strlen(str);
+    int strLength = strlen((char*)str);
     for (int i = 0; i < strLength; i++)
-        charCount[(int)str[i]]++;
+        charCount[str[i]]++;
     
     CharOccur table[alphabet];
     for (int i = 0; i < alphabet; i++)
