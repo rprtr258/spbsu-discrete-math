@@ -6,6 +6,7 @@ struct BitVector {
     unsigned int capacity = 0;
     
     BitVector(unsigned int const _size = 0);
+    BitVector(const BitVector &other);
     
     ~BitVector();
     

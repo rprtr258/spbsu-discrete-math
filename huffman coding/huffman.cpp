@@ -143,9 +143,9 @@ void HuffmanTree::decode(const char *inputFile, const char *outputFile) {
     
     int c = '$';
     std::stack<Node*> tmp;
-    while (c != 0) {
+    while (c != '\0') {
         c = fgetc(inFile);
-        if (c == 0)
+        if (c == '\0')
             continue;
         Node* node = new Node();
         if (c != separator) {
