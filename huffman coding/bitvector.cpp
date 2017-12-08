@@ -26,7 +26,8 @@ BitVector::~BitVector() {
 }
 
 const BitVector& BitVector::operator=(const BitVector &other) {
-    delete[] data;
+    if (data != nullptr)
+        delete[] data;
     
     size = other.size;
     capacity = other.capacity;
