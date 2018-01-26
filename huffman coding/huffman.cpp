@@ -2,10 +2,10 @@
 #include <stdio.h>
 #include <queue>
 #include <stack>
-#include "huffman.h"
 #include "node.h"
 #include "freqtable.h"
 #include "putChar.h"
+#include "huffman.h"
 
 int unsigned const alphabet = 256;
 char const separator = '\7';
@@ -48,7 +48,7 @@ Node* buildTree(char const *str) {
     FrequencyTable ftable(str);
     
     for (int unsigned i = 0; i < ftable.getSize(); i++) {
-        Node *leaf = createNode(ftable.data[i].first, ftable.data[i].second);
+        Node *leaf = createNode(ftable[i].first, ftable[i].second);
         firstQueue.push(leaf);
     }
     
@@ -66,7 +66,7 @@ HuffmanTree* createTree(const char *str) {
     return tree;
 }
 
-void proccesSymbol(std::stack<Node*> stack, char const symbol) {
+void proccesSymbol(std::stack<Node*> &stack, char const symbol) {
     Node *node = nullptr;
     if (symbol == separator) {
         Node *rightChild = stack.top();
@@ -126,17 +126,17 @@ void writeCodes(Node *node, char **codes, char *buffer, int const level = 0) {
 
 char* encode(HuffmanTree *tree, const char *str) {
     char *codes[alphabet];
-    for (int i = 0; i < alphabet; i++)
+    for (int unsigned i = 0; i < alphabet; i++)
         codes[i] = nullptr;
     
     char buffer[alphabet];
     writeCodes(tree->root, codes, buffer);
     
-    int strLength = strlen(str);
-    int resultLength = getCodeLength(tree->root);
+    int unsigned strLength = strlen(str);
+    int unsigned resultLength = getCodeLength(tree->root);
     char *result = new char[resultLength + 1];
     int j = 0;
-    for (int i = 0; i < strLength; i++) {
+    for (int unsigned i = 0; i < strLength; i++) {
         int unsigned const symbolCode = (int)str[i];
         int codeLength = strlen(codes[symbolCode]);
         memcpy(result + j, codes[symbolCode], codeLength * sizeof(char));
@@ -144,7 +144,7 @@ char* encode(HuffmanTree *tree, const char *str) {
     }
     result[resultLength] = '\0';
     
-    for (int i = 0; i < alphabet; i++)
+    for (int unsigned i = 0; i < alphabet; i++)
         if (codes[i] != nullptr)
             delete[] codes[i];
     return result;

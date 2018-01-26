@@ -1,20 +1,7 @@
 huffman.h:1:9: warning: #pragma once in main file
  #pragma once
          ^~~~
-huffman.cpp: In function 'Node* buildTree(const char*)':
-huffman.cpp:51:39: error: base operand of '->' has non-pointer type 'FrequencyTable'
-         Node *leaf = createNode(ftable->data[i].first, ftable->data[i].second);
-                                       ^~
-huffman.cpp:51:62: error: base operand of '->' has non-pointer type 'FrequencyTable'
-         Node *leaf = createNode(ftable->data[i].first, ftable->data[i].second);
-                                                              ^~
-huffman.cpp:58:41: error: 'peekBegin' was not declared in this scope
-     Node *result = peekBegin(secondQueue);
-                                         ^
 huffman.cpp: In function 'char* encode(HuffmanTree*, const char*)':
-huffman.cpp:129:23: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
-     for (int i = 0; i < alphabet; i++)
-                     ~~^~~~~~~~~~
 huffman.cpp:147:23: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
      for (int i = 0; i < alphabet; i++)
                      ~~^~~~~~~~~~
@@ -24,4 +11,21 @@ freqtable.h:1:9: warning: #pragma once in main file
 filesencode.h:1:9: warning: #pragma once in main file
  #pragma once
          ^~~~
+C:\Users\rprtr258\AppData\Local\Temp\cctxk00y.o:huffman.cpp:(.text+0x105): undefined reference to `createNode(Node*, Node*)'
+C:\Users\rprtr258\AppData\Local\Temp\cctxk00y.o:huffman.cpp:(.text+0x1ef): undefined reference to `createNode(char, int)'
+C:\Users\rprtr258\AppData\Local\Temp\cctxk00y.o:huffman.cpp:(.text+0x38c): undefined reference to `createNode(Node*, Node*)'
+C:\Users\rprtr258\AppData\Local\Temp\cctxk00y.o:huffman.cpp:(.text+0x39a): undefined reference to `deleteNode(Node*&)'
+C:\Users\rprtr258\AppData\Local\Temp\cctxk00y.o:huffman.cpp:(.text+0x3a5): undefined reference to `deleteNode(Node*&)'
+C:\Users\rprtr258\AppData\Local\Temp\cctxk00y.o:huffman.cpp:(.text+0x3c8): undefined reference to `createNode(char, int)'
+C:\Users\rprtr258\AppData\Local\Temp\cctxk00y.o:huffman.cpp:(.text+0x55f): undefined reference to `deleteNode(Node*&)'
+C:\Users\rprtr258\AppData\Local\Temp\cctxk00y.o:huffman.cpp:(.text+0x58c): undefined reference to `isLeaf(Node*)'
+C:\Users\rprtr258\AppData\Local\Temp\cctxk00y.o:huffman.cpp:(.text+0x6e0): undefined reference to `getCodeLength(Node*, int)'
+C:\Users\rprtr258\AppData\Local\Temp\cctxk00y.o:huffman.cpp:(.text+0x863): undefined reference to `decodeChar(Node*, _iobuf*, char)'
+C:\Users\rprtr258\AppData\Local\Temp\cctxk00y.o:huffman.cpp:(.text+0x879): undefined reference to `putChar(char*&, char)'
+C:\Users\rprtr258\AppData\Local\Temp\cctxk00y.o:huffman.cpp:(.text+0x8b6): undefined reference to `isLeaf(Node*)'
+C:\Users\rprtr258\AppData\Local\Temp\cctxk00y.o:huffman.cpp:(.text+0x98f): undefined reference to `getEntropy(Node*, int)'
+C:\Users\rprtr258\AppData\Local\Temp\cctxk00y.o:huffman.cpp:(.text+0x9ba): undefined reference to `getCodeLength(Node*, int)'
+C:\Users\rprtr258\AppData\Local\Temp\cctxk00y.o:huffman.cpp:(.text+0x9e7): undefined reference to `saveNodeInfo(Node*, char*, _iobuf*, int, int)'
+C:\Users\rprtr258\AppData\Local\Temp\ccjW7kiD.o:filesencode.cpp:(.text+0x75): undefined reference to `putChar(char*&, char)'
+collect2.exe: error: ld returned 1 exit status
 make: *** [all] Error 1

@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <math.h>
-#include "huffmanNode.h"
+#include "node.h"
 
 Node* createNode(Node *leftChild, Node *rightChild) {
     Node *result = new Node();

@@ -16,6 +16,11 @@ bool doesFileExist(const char *filename) {
 // TODO: BASE64 encoding
 // TODO: fix \0 symbol
 // TODO: configuration for multi-letters symbols
+/* TODO: encode format:
+ * (size of tree in bits), (size of encoded text), (encoded tree), (encoded text)
+ * tree format:
+ * (0... - symbol, 1 - separator)
+ */
 
 int main() {
     printf("Put message in \"file.txt\"\n");

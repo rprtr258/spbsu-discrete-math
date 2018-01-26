@@ -1,2 +1,2 @@
 all:
-	g++ -std=c++11 -Wall main.cpp huffman.h huffman.cpp freqtable.h freqtable.cpp filesencode.h filesencode.cpp
+	g++ -g -std=c++11 -Wall -Wextra main.cpp huffman.cpp freqtable.cpp filesencode.cpp node.cpp putChar.cpp

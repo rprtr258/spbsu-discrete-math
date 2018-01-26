@@ -3,18 +3,19 @@
 #include <utility>
 #include "node.h"
 
-struct HuffmanTree {
-    Node *root = nullptr;
+class HuffmanTree {
+    private:
+        Node *root = nullptr;
+    public:
+        HuffmanTree(const char *str);
+        ~HuffmanTree();
+        
+        char* encode(const char *str);
+        char* decode(const char *str);
+        
+        char* asString();
+        char* getInfo();
+        
+        void printDebug();
 };
 
-HuffmanTree* createTree(const char *str);
-HuffmanTree* readTree(const char *filename);
-void deleteTree(HuffmanTree *&tree);
-
-char* encode(HuffmanTree *tree, const char *str);
-char* decodeFile(HuffmanTree *tree, const char *fileInput);
-
-void saveTree(HuffmanTree *tree, FILE *file);
-void saveInfo(HuffmanTree *tree, FILE *file, int const textLength);
-
-void debug(HuffmanTree *tree);
