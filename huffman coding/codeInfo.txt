@@ -1,0 +1,34 @@
+Frequency table:
+' '(ASCII code: 20): frequency:  41, code: 00, P( ) = 0.184684685
+'a'(ASCII code: 61): frequency:  10, code: 0100, P(a) = 0.045045045
+':'(ASCII code: 3A): frequency:  11, code: 0101, P(:) = 0.049549550
+'2'(ASCII code: 32): frequency:   6, code: 01100, P(2) = 0.027027027
+'-'(ASCII code: 2D): frequency:   6, code: 01101, P(-) = 0.027027027
+'C'(ASCII code: 43): frequency:   6, code: 01110, P(C) = 0.027027027
+'>'(ASCII code: 3E): frequency:   6, code: 01111, P(>) = 0.027027027
+'n'(ASCII code: 6E): frequency:   6, code: 10000, P(n) = 0.027027027
+'1'(ASCII code: 31): frequency:   7, code: 10001, P(1) = 0.031531532
+'d'(ASCII code: 64): frequency:   7, code: 10010, P(d) = 0.031531532
+'0'(ASCII code: 30): frequency:   1, code: 10011000, P(0) = 0.004504505
+'o'(ASCII code: 6F): frequency:   1, code: 10011001, P(o) = 0.004504505
+'v'(ASCII code: 76): frequency:   2, code: 1001101, P(v) = 0.009009009
+'4'(ASCII code: 34): frequency:   4, code: 100111, P(4) = 0.018018018
+'s'(ASCII code: 73): frequency:   8, code: 10100, P(s) = 0.036036036
+'e'(ASCII code: 65): frequency:   8, code: 10101, P(e) = 0.036036036
+'\n'(ASCII code: 0A): frequency:  17, code: 1011, P(\n) = 0.076576577
+'i'(ASCII code: 69): frequency:  17, code: 1100, P(i) = 0.076576577
+'t'(ASCII code: 74): frequency:  18, code: 1101, P(t) = 0.081081081
+'r'(ASCII code: 72): frequency:   2, code: 1110000, P(r) = 0.009009009
+'5'(ASCII code: 35): frequency:   3, code: 1110001, P(5) = 0.013513514
+'y'(ASCII code: 79): frequency:   5, code: 111001, P(y) = 0.022522523
+'3'(ASCII code: 33): frequency:   5, code: 111010, P(3) = 0.022522523
+'#'(ASCII code: 23): frequency:   5, code: 111011, P(#) = 0.022522523
+'P'(ASCII code: 50): frequency:   5, code: 111100, P(P) = 0.022522523
+','(ASCII code: 2C): frequency:   5, code: 111101, P(,) = 0.022522523
+'h'(ASCII code: 68): frequency:   5, code: 111110, P(h) = 0.022522523
+'c'(ASCII code: 63): frequency:   5, code: 111111, P(c) = 0.022522523
+Entropy: 4.33568045047010208748
+Expected code length: 4.38288288288288274686
+Length of text(in bytes): 222
+Length of encoded text(in bytes): 121
+Compression coeff.: 1.82528263103802679268

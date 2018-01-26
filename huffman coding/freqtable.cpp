@@ -1,80 +1,63 @@
 #include <string.h>
-#include <stdio.h>
 #include <algorithm>
 #include "freqtable.h"
 
-int const alphabet = 256;
+int unsigned const alphabet = 256;
 
-FrequencyTable::FrequencyTable(const unsigned char *str) {
-    int charCount[alphabet];
-    for (int i = 0; i < alphabet; i++)
-        charCount[i] = 0;
-    int strLength = strlen((char*)str);
-    for (int i = 0; i < strLength; i++)
-        charCount[str[i]]++;
+CharOccur* createSimpleTable(const char *str) {
+    int unsigned charCount[alphabet];
+    memset(charCount, 0, alphabet * sizeof(int unsigned));
     
-    CharOccur table[alphabet];
-    for (int i = 0; i < alphabet; i++)
+    for (int unsigned i = 0; str[i] != '\0'; i++)
+        charCount[(int unsigned)str[i]]++;
+    
+    CharOccur *table = new CharOccur[alphabet];
+    for (int unsigned i = 0; i < alphabet; i++)
         table[i] = CharOccur((char)i, charCount[i]);
     std::sort(table, table + alphabet, [](const CharOccur &occur1, const CharOccur &occur2) {
         return occur1.second < occur2.second;
     });
     
-    int ptr = 0;
-    while (table[ptr].second == 0)
-        ptr++;
-    
-    data = new CharOccur[alphabet - ptr];
-    for (int i = ptr; i < alphabet; i++)
-        data[i - ptr] = table[i];
-    
-    size = alphabet - ptr;
+    return table;
 }
 
-FrequencyTable::FrequencyTable(const char *filename) {
-    FILE *file = fopen(filename, "rb");
+FrequencyTable::FrequencyTable(const char *str) {
+    CharOccur *simpleTable = createSimpleTable(str);
     
-    int charCount[alphabet];
-    for (int i = 0; i < alphabet; i++)
-        charCount[i] = 0;
-    
-    CharOccur table[alphabet];
-    
-    int symbol = '$';
-    while (symbol != EOF) {
-        symbol = fgetc(file);
-        if (symbol == EOF)
-            continue;
-        charCount[symbol]++;
-    }
-    
-    for (int i = 0; i < alphabet; i++)
-        table[i] = CharOccur((char)i, charCount[i]);
-    std::sort(table, table + alphabet, [](const CharOccur &occur1, const CharOccur &occur2) {
-        return occur1.second < occur2.second;
-    });
-    
-    int ptr = 0;
-    while (table[ptr].second == 0)
+    int unsigned ptr = 0;
+    while (simpleTable[ptr].second == 0)
         ptr++;
     
-    data = new CharOccur[alphabet - ptr];
-    for (int i = ptr; i < alphabet; i++)
-        data[i - ptr] = table[i];
-    
     size = alphabet - ptr;
+    if (size == 1) {
+        // TODO
+    } else if (size > 1) {
+        data = new CharOccur[size];
+        for (int unsigned i = 0; i < size; i++)
+            data[i] = simpleTable[i + ptr];
+    }
     
-    fclose(file);
+    delete[] simpleTable;
 }
 
 FrequencyTable::~FrequencyTable() {
-    delete[] data;
+    if (data != nullptr)
+        delete[] data;
 }
 
-CharOccur& FrequencyTable::operator[](int const &index) {
+CharOccur FrequencyTable::operator[](int unsigned const index) {
+    if (index >= size)
+        return {'\0', 0};
     return data[index];
 }
 
-const CharOccur& FrequencyTable::operator[](int const &index) const {
-    return data[index];
+int unsigned FrequencyTable::getSize() {
+    return size;
+}
+
+void FrequencyTable::erase() {
+    if (data != nullptr)
+        delete[] data;
+    data = nullptr;
+    size = 0;
 }
