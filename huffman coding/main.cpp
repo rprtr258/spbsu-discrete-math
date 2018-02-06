@@ -10,6 +10,7 @@ bool doesFileExist(const char *filename) {
     return true;
 }
 
+// TODO: store length of tree and text as bytes
 // TODO: optimize putChar shit
 // TODO: fix one-symbol text
 // add 2 symbols at the end & remove them in decoding

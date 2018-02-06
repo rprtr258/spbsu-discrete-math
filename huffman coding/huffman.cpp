@@ -146,7 +146,6 @@ ByteString HuffmanTree::decode(ByteString str, int unsigned const length) {
     for (int unsigned i = 0; i < length; i++) {
         char unsigned newSymbol = decodeChar(root, str, i);
         result.push_back(newSymbol);
-        printf("%c", newSymbol);
     }
     return result;
 }

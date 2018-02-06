@@ -67,7 +67,7 @@ void decodeFile(const char *fileInput, const char *fileOutput) {
     int unsigned encodedLength = getTextLength(file);
     ByteString text = tree.decode(file, encodedLength);
     
-    //FILE *fileOut = fopen(fileOutput, "w");
-    //writeByteString(text, fileOut);
-    //fclose(fileOut);
+    FILE *fileOut = fopen(fileOutput, "wb");
+    writeByteString(text, fileOut);
+    fclose(fileOut);
 }
