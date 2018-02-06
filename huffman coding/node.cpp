@@ -1,55 +1,56 @@
 #include <stdio.h>
 #include <math.h>
+#include "putChar.h"
 #include "node.h"
 
 Node* createNode(Node *leftChild, Node *rightChild) {
     Node *result = new Node();
-    result->l = copy(leftChild);
-    result->r = copy(rightChild);
+    result->l = leftChild;
+    result->r = rightChild;
     result->frequency = leftChild->frequency + rightChild->frequency;
     return result;
 }
 
-Node* createNode(char const symbol, int const frequency) {
+Node* createNode(char unsigned const symbol, int const frequency) {
     Node *result = new Node();
     result->symbol = symbol;
     result->frequency = frequency;
     return result;
 }
 
-Node* copy(Node *node) {
-    if (node == nullptr)
-        return nullptr;
-    
-    Node *result = new Node();
-    result->l = copy(node->l);
-    result->r = copy(node->r);
-    result->symbol = node->symbol;
-    result->frequency = node->frequency;
-    
-    return result;
-}
-
 void deleteNode(Node *&node) {
     if (node == nullptr)
         return;
-    deleteNode(node->l);
-    deleteNode(node->r);
     delete node;
 }
 
-char decodeChar(Node *root, FILE *file, char const firstBit) {
+char decodeChar(Node *root, std::vector<char unsigned> str, int unsigned &i) {
     Node *temp = root;
-    char bit = firstBit;
-    while (!isLeaf(temp)) {
-        if (bit == '0')
-            temp = temp->l;
-        else
-            temp = temp->r;
+    char unsigned bit = str[i];
+    //printf("\"");
+    while (i < str.size() && !isLeaf(temp)) {
+        //printf("%c", bit);
+        switch (bit) {
+            case '0': {
+                temp = temp->l;
+                break;
+            }
+            case '1': {
+                temp = temp->r;
+                break;
+            }
+            default: {
+                printf("Something went wrong");
+                i = -1;
+                break;
+            }
+        }
         if (isLeaf(temp))
             break;
-        fscanf(file, "%c", &bit);
+        i++;
+        bit = str[i];
     }
+    //printf("\"\n");
     return temp->symbol;
 }
 
@@ -87,40 +88,43 @@ double getEntropy(Node *node, int const textLength) {
     return getEntropy(node->l, textLength) + getEntropy(node->r, textLength);
 }
 
-void printEncodedChar(FILE *file, char const symbol) {
-    if (symbol == '\n')
-        fprintf(file, "\\n");
-    else
-        fprintf(file, "%c", symbol);
-}
-
-void printNodeInfo(Node *node, char *buffer, FILE* file, int const textLength) {
+std::vector<char unsigned> printNodeInfo(Node *node, std::vector<char unsigned> buffer, int const textLength) {
     double probability = (double)node->frequency / textLength;
 
-    fprintf(file, "\'");
-    printEncodedChar(file, node->symbol);
-    fprintf(file, "\'");
+    std::vector<char unsigned> result;
+    result.push_back('\'');
+    result.push_back(node->symbol);
+    result.push_back('\'');
 
-    fprintf(file, "(ASCII code: %02X): frequency: %3d, code: %s", (int)node->symbol, node->frequency, buffer);
+    //sprintf(result, "(ASCII code: %02X): frequency: %3d, code: %s", (int)node->symbol, node->frequency, buffer);
 
-    fprintf(file, ", P(");
-    printEncodedChar(file, node->symbol);
-    fprintf(file, ") = %.9f\n", probability);
+    //sprintf(result, ", P(");
+    //if (node->symbol == '\n')
+    //    sprintf(result, "\\n");
+    //else
+    //    sprintf(result, "%c", node->symbol);
+    //sprintf(result, ") = %.9f\n", probability);
+
+    return result;
 }
 
-void saveNodeInfo(Node *node, char *buffer, FILE* file, int const textLength, int const level) {
-    if (node == nullptr)
-        return;
+std::vector<char unsigned> saveNodeInfo(Node *node, std::vector<char unsigned> buffer, int const textLength, int const level) {
+    if (node == nullptr) {
+        return std::vector<char unsigned>();
+    }
     
     if (isLeaf(node)) {
         buffer[level] = '\0';
-        printNodeInfo(node, buffer, file, textLength);
-        return;
+        std::vector<char unsigned> nodeInfo = printNodeInfo(node, buffer, textLength);
+        return nodeInfo;
     }
     
-    buffer[level] = '0';
-    saveNodeInfo(node->l, buffer, file, textLength, level + 1);
+    buffer.push_back('0');
+    std::vector<char unsigned> listLeft = saveNodeInfo(node->l, buffer, textLength, level + 1);
     
-    buffer[level] = '1';
-    saveNodeInfo(node->r, buffer, file, textLength, level + 1);
+    buffer.push_back('1');
+    std::vector<char unsigned> listRight = saveNodeInfo(node->r, buffer, textLength, level + 1);
+
+    std::vector<char unsigned> result;// = strConcate(listLeft, listRight);
+    return result;
 }

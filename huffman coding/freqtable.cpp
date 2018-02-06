@@ -4,12 +4,12 @@
 
 int unsigned const alphabet = 256;
 
-CharOccur* createSimpleTable(const char *str) {
+CharOccur* createSimpleTable(std::vector<char unsigned> str) {
     int unsigned charCount[alphabet];
     memset(charCount, 0, alphabet * sizeof(int unsigned));
     
-    for (int unsigned i = 0; str[i] != '\0'; i++)
-        charCount[(int unsigned)str[i]]++;
+    for (char unsigned const &byte : str)
+        charCount[byte]++;
     
     CharOccur *table = new CharOccur[alphabet];
     for (int unsigned i = 0; i < alphabet; i++)
@@ -21,7 +21,7 @@ CharOccur* createSimpleTable(const char *str) {
     return table;
 }
 
-FrequencyTable::FrequencyTable(const char *str) {
+FrequencyTable::FrequencyTable(std::vector<char unsigned> str) {
     CharOccur *simpleTable = createSimpleTable(str);
     
     int unsigned ptr = 0;

@@ -1,20 +1,24 @@
 #pragma once
 #include <stdio.h>
 #include <utility>
+#include <vector>
 #include "node.h"
+
+typedef std::vector<char unsigned> ByteString;
 
 class HuffmanTree {
     private:
         Node *root = nullptr;
     public:
-        HuffmanTree(const char *str);
+        HuffmanTree(ByteString str);
+	HuffmanTree(ByteString tree, int unsigned const treeSize);
         ~HuffmanTree();
         
-        char* encode(const char *str);
-        char* decode(const char *str);
+        ByteString encode(ByteString str);
+        ByteString decode(ByteString str, int unsigned const length);
         
-        char* asString();
-        char* getInfo();
+	ByteString asString();
+        ByteString getInfo();
         
         void printDebug();
 };
