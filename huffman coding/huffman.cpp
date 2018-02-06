@@ -8,7 +8,6 @@
 #include "huffman.h"
 
 int unsigned const alphabet = 256;
-char const SEPARATOR = '\7';
 
 int unsigned strlen(char unsigned const *str) {
     int unsigned result = 0;
@@ -69,26 +68,56 @@ HuffmanTree::HuffmanTree(ByteString str) {
     root = buildTree(str);
 }
 
-void proccesSymbol(std::stack<Node*> &stack, char const symbol) {
-    Node *node = nullptr;
-    if (symbol == SEPARATOR) {
-        Node *rightChild = stack.top();
-        stack.pop();
-        Node *leftChild = stack.top();
-        stack.pop();
+void pushNode(std::stack<Node*> &stack, char const symbol) {
+    Node *node = createNode(symbol);
+    stack.push(node);
+}
 
-        node = createNode(leftChild, rightChild);
-    } else {
-        node = createNode(symbol);
-    }
+void mergeNodes(std::stack<Node*> &stack) {
+    Node *rightChild = stack.top();
+    stack.pop();
+    Node *leftChild = stack.top();
+    stack.pop();
+
+    Node *node = createNode(leftChild, rightChild);
     stack.push(node);
 }
 
 HuffmanTree::HuffmanTree(ByteString tree, int unsigned const treeSize) {
     std::stack<Node*> tempStack;
     
-    for (int unsigned i = 0; i < treeSize; i++)
-        proccesSymbol(tempStack, tree[i]);
+    int unsigned bitIndex = 0;
+    int unsigned byteIndex = 0;
+    int unsigned length = 0;
+    while (length < treeSize) {
+        if (tree[byteIndex] & (1 << (7 - bitIndex))) {
+            length++;
+            mergeNodes(tempStack);
+            bitIndex++;
+            if (bitIndex == 8) {
+                bitIndex = 0;
+                byteIndex++;
+            }
+        } else {
+            length += 9;
+            bitIndex++;
+            if (bitIndex == 8) {
+                bitIndex = 0;
+                byteIndex++;
+            }
+            char unsigned symbol = 0;
+            for (int unsigned i = 0; i < 8; i++) {
+                int unsigned bit = tree[byteIndex] & (1 << (7 - bitIndex));
+                symbol |= (bit << bitIndex) >> i;
+                bitIndex++;
+                if (bitIndex == 8) {
+                    bitIndex = 0;
+                    byteIndex++;
+                }
+            }
+            pushNode(tempStack, symbol);
+        }
+    }
     
     root = tempStack.top();
 }
@@ -149,22 +178,38 @@ ByteString HuffmanTree::decode(ByteString str, int unsigned const length) {
     return result;
 }
 
-ByteString saveNode(Node *node) {
-    ByteString result;
-    if (isLeaf(node)) {
-        result.push_back(node->symbol);
+void saveNode(Node *node, ByteString &res, int unsigned &bitIndex, int unsigned &length) {
+    if (node == nullptr) {
+        return;
+    } else if (isLeaf(node)) {
+        char unsigned byte = node->symbol;
+        length += 9;
+        if (bitIndex == 0)
+            res.push_back(0);
+        bitIndex = (bitIndex + 1) % 8;
+        for (int unsigned i = 0; i < 8; i++) {
+            if (bitIndex == 0)
+                res.push_back(0);
+            int unsigned bit = (byte & (1 << (7 - i)));
+            res.back() |= ((bit << i) >> bitIndex);
+            
+            bitIndex = (bitIndex + 1) % 8;
+        }
     } else {
-        result = saveNode(node->l);
-        ByteString second = saveNode(node->r);
-	for (const char unsigned &byte : second)
-	    result.push_back(byte);
-        result.push_back(SEPARATOR);
+        length++;
+        saveNode(node->l, res, bitIndex, length);
+        saveNode(node->r, res, bitIndex, length);
+        if (bitIndex == 0)
+            res.push_back(0);
+        res.back() |= (1 << (7 - bitIndex));
+        bitIndex = (bitIndex + 1) % 8;
     }
-    return result;
 }
 
-ByteString HuffmanTree::asString() {
-    ByteString result = saveNode(root);
+ByteString HuffmanTree::asString(int unsigned &length) {
+    ByteString result;
+    int unsigned bitIndex = 0;
+    saveNode(root, result, bitIndex, length);
     return result;
 }
 

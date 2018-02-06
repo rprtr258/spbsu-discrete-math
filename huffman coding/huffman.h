@@ -17,6 +17,6 @@ class HuffmanTree {
         ByteString encode(ByteString str);
         ByteString decode(ByteString str, int unsigned const length);
         
-        ByteString asString();
+        ByteString asString(int unsigned &length);
 };
 

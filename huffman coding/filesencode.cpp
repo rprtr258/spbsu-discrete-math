@@ -48,9 +48,10 @@ void encodeFile(const char *fileInput, const char *fileOutput) {
     
     HuffmanTree tree(str);
     ByteString encodedString = tree.encode(str);
-    ByteString savedTree = tree.asString();
+    int unsigned treeLength = 0;
+    ByteString savedTree = tree.asString(treeLength);
     
-    ByteString treeSize = getAsBytes(savedTree.size(), treeSizeLength);
+    ByteString treeSize = getAsBytes(treeLength, treeSizeLength);
     ByteString textSize = getAsBytes(encodedString.size(), textSizeLength);
     
     FILE *outFile = fopen(fileOutput, "wb");
@@ -72,7 +73,7 @@ void decodeFile(const char *fileInput, const char *fileOutput) {
     
     file.erase(file.begin(), file.begin() + treeSizeLength + textSizeLength);
     HuffmanTree tree(file, treeLength);
-    file.erase(file.begin(), file.begin() + treeLength);
+    file.erase(file.begin(), file.begin() + treeLength / 8 + (treeLength % 8 != 0));
     
     ByteString text = tree.decode(file, encodedLength);
     
