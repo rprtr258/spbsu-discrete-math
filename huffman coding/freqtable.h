@@ -9,7 +9,7 @@ class FrequencyTable {
         CharOccur *data = nullptr;
         int unsigned size = 0;
     public:
-        FrequencyTable(std::vector<char unsigned> str);
+        FrequencyTable(char const *filename);
         ~FrequencyTable();
         
         CharOccur operator[](int unsigned const index);

@@ -47,10 +47,10 @@ void proccessTwoRarest(std::queue<Node*> &firstQueue, std::queue<Node*> &secondQ
     secondQueue.push(parent);
 }
 
-Node* buildTree(ByteString str) {
+Node* buildTree(char const *filename) {
     std::queue<Node*> firstQueue;
     std::queue<Node*> secondQueue;
-    FrequencyTable ftable(str);
+    FrequencyTable ftable(filename);
     
     for (int unsigned i = 0; i < ftable.getSize(); i++) {
         Node *leaf = createNode(ftable[i].first, ftable[i].second);
@@ -64,8 +64,8 @@ Node* buildTree(ByteString str) {
     return result;
 }
 
-HuffmanTree::HuffmanTree(ByteString str) {
-    root = buildTree(str);
+HuffmanTree::HuffmanTree(char const *filename) {
+    root = buildTree(filename);
 }
 
 void pushNode(std::stack<Node*> &stack, char const symbol) {
@@ -137,7 +137,7 @@ void writeCodes(Node *node, char unsigned *codes[alphabet], char unsigned buffer
     writeCodes(node->r, codes, buffer, level + 1);
 }
 
-ByteString HuffmanTree::encode(ByteString str, int unsigned &length) {
+ByteString HuffmanTree::encode(char const *filename, int unsigned &length) {
     char unsigned *codes[alphabet];
     char unsigned buffer[alphabet];
     for (int unsigned i = 0; i < alphabet; i++) {
@@ -149,8 +149,13 @@ ByteString HuffmanTree::encode(ByteString str, int unsigned &length) {
     
     ByteString result;
     int unsigned bitIndex = 0;
-    for (int unsigned i = 0; i < str.size(); i++) {
-        int unsigned const charCode = (int)str[i];
+    FILE *file = fopen(filename, "rb");
+    while (!feof(file)) {
+        char unsigned byte = 0;
+        fscanf(file, "%c", &byte);
+        if (feof(file))
+            break;
+        int unsigned const charCode = (int unsigned)byte;
         int unsigned codeLength = strlen(codes[charCode]);
         length += codeLength;
         for (int unsigned k = 0; k < codeLength; k++) {
@@ -161,6 +166,7 @@ ByteString HuffmanTree::encode(ByteString str, int unsigned &length) {
             bitIndex = (bitIndex + 1) % 8;
         }
     }
+    fclose(file);
 
     for (int unsigned i = 0; i < alphabet; i++)
         if (codes[i] != nullptr)
