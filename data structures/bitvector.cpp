@@ -12,7 +12,21 @@ BitVector::BitVector(unsigned int const _size) {
 }
 
 BitVector::~BitVector() {
-    delete data;
+    if (data != nullptr)
+        delete[] data;
+}
+
+const BitVector& BitVector::operator=(const BitVector &other) {
+    if (data != nullptr)
+        delete[] data;
+    
+    size = other.size;
+    capacity = other.capacity;
+    
+    data = new unsigned char[other.capacity];
+    memcpy(data, other.data, capacity);
+    
+    return (*this);
 }
 
 bool BitVector::get(unsigned int const &index) const {
@@ -50,8 +64,10 @@ void BitVector::print() {
 }
 
 void BitVector::printBytes() {
+    printf("\"");
     for (unsigned int i = 0; i < capacity; i++)
         printf("%c", data[i]);
+    printf("\"");
 }
 
 void BitVector::pushBack(BitVector const &other) {
@@ -64,14 +80,3 @@ void BitVector::popBack() {
     size--;
 }
 
-const BitVector& BitVector::operator=(const BitVector &other) {
-    delete[] data;
-    
-    size = other.size;
-    capacity = other.capacity;
-    
-    data = new unsigned char[other.capacity];
-    memcpy(data, other.data, capacity);
-    
-    return (*this);
-}
