@@ -43,6 +43,13 @@ char decodeChar(Node *root, std::vector<char unsigned> str, int unsigned &i, int
     return temp->symbol;
 }
 
+int unsigned calcResultLength(Node *node, int unsigned const level) {
+    if (isLeaf(node))
+        return node->frequency * level;
+    return calcResultLength(node->l, level + 1) +
+           calcResultLength(node->r, level + 1);
+}
+
 bool isLeaf(Node *node) {
     return (node->l == nullptr && node->r == nullptr);
 }

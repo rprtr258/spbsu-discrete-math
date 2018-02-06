@@ -45,8 +45,8 @@ ByteString getAsBytes(int unsigned num, int unsigned const requiredSize) {
 
 void encodeFile(const char *fileInput, const char *fileOutput) {
     HuffmanTree tree(fileInput);
-    int unsigned encodedLength = 0;
-    ByteString encodedString = tree.encode(fileInput, encodedLength);
+    int unsigned encodedLength = tree.getResultLength();
+    ByteString encodedString = tree.encode(fileInput);
     int unsigned treeLength = 0;
     ByteString savedTree = tree.asString(treeLength);
     

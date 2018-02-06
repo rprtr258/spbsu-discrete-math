@@ -137,7 +137,7 @@ void writeCodes(Node *node, char unsigned *codes[alphabet], char unsigned buffer
     writeCodes(node->r, codes, buffer, level + 1);
 }
 
-ByteString HuffmanTree::encode(char const *filename, int unsigned &length) {
+ByteString HuffmanTree::encode(char const *filename) {
     char unsigned *codes[alphabet];
     char unsigned buffer[alphabet];
     for (int unsigned i = 0; i < alphabet; i++) {
@@ -157,7 +157,6 @@ ByteString HuffmanTree::encode(char const *filename, int unsigned &length) {
             break;
         int unsigned const charCode = (int unsigned)byte;
         int unsigned codeLength = strlen(codes[charCode]);
-        length += codeLength;
         for (int unsigned k = 0; k < codeLength; k++) {
             if (bitIndex == 0)
                 result.push_back(0);
@@ -215,6 +214,10 @@ void saveNode(Node *node, ByteString &res, int unsigned &bitIndex, int unsigned 
         res.back() |= (1 << (7 - bitIndex));
         bitIndex = (bitIndex + 1) % 8;
     }
+}
+
+int unsigned HuffmanTree::getResultLength() {
+    return calcResultLength(root);
 }
 
 ByteString HuffmanTree::asString(int unsigned &length) {
