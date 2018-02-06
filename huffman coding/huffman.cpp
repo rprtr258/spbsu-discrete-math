@@ -83,14 +83,15 @@ void mergeNodes(std::stack<Node*> &stack) {
     stack.push(node);
 }
 
-HuffmanTree::HuffmanTree(ByteString tree, int unsigned const treeSize) {
+HuffmanTree::HuffmanTree(FILE *fileIn, int unsigned const treeSize) {
     std::stack<Node*> tempStack;
     
     int unsigned bitIndex = 0;
-    int unsigned byteIndex = 0;
+    char unsigned byte = 0;
+    fscanf(fileIn, "%c", &byte);
     int unsigned length = 0;
     while (length < treeSize) {
-        if (tree[byteIndex] & (1 << (7 - bitIndex))) {
+        if (byte & (1 << (7 - bitIndex))) {
             length++;
             mergeNodes(tempStack);
         } else {
@@ -100,9 +101,9 @@ HuffmanTree::HuffmanTree(ByteString tree, int unsigned const treeSize) {
                 bitIndex++;
                 if (bitIndex == 8) {
                     bitIndex = 0;
-                    byteIndex++;
+                    fscanf(fileIn, "%c", &byte);
                 }
-                int unsigned bit = tree[byteIndex] & (1 << (7 - bitIndex));
+                int unsigned bit = byte & (1 << (7 - bitIndex));
                 symbol |= (bit << bitIndex) >> i;
             }
             pushNode(tempStack, symbol);
@@ -110,7 +111,7 @@ HuffmanTree::HuffmanTree(ByteString tree, int unsigned const treeSize) {
         bitIndex++;
         if (bitIndex == 8) {
             bitIndex = 0;
-            byteIndex++;
+            fscanf(fileIn, "%c", &byte);
         }
     }
     
@@ -180,16 +181,18 @@ void HuffmanTree::encode(char const *filename, FILE *outFile) {
             delete[] codes[i];
 }
 
-ByteString HuffmanTree::decode(ByteString str, int unsigned const length) {
-    ByteString result;
+void HuffmanTree::decode(FILE *fileIn, char const *filename, int unsigned const length) {
     int unsigned bitIndex = 0;
     int unsigned i = 0;
     int unsigned decodedBits = 0;
+    char unsigned byte = 0;
+    fscanf(fileIn, "%c", &byte);
+    FILE *fileOut = fopen(filename, "wb");
     while (decodedBits < length) {
-        char unsigned newSymbol = decodeChar(root, str, i, bitIndex, decodedBits);
-        result.push_back(newSymbol);
+        char unsigned newSymbol = decodeChar(root, fileIn, i, byte, bitIndex, decodedBits);
+        fprintf(fileOut, "%c", newSymbol);
     }
-    return result;
+    fclose(fileOut);
 }
 
 void saveNode(Node *node, ByteString &res, int unsigned &bitIndex, int unsigned &length) {

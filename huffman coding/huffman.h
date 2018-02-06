@@ -11,11 +11,11 @@ class HuffmanTree {
         Node *root = nullptr;
     public:
         HuffmanTree(char const *filename);
-        HuffmanTree(ByteString tree, int unsigned const treeSize);
+        HuffmanTree(FILE *file, int unsigned const treeSize);
         ~HuffmanTree();
         
         void encode(char const *filename, FILE *outFile);
-        ByteString decode(ByteString str, int unsigned const length);
+        void decode(FILE *fileIn, char const *filename, int unsigned const length);
         
         int unsigned getResultLength();
         ByteString asString(int unsigned &length);

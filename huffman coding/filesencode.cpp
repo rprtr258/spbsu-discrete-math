@@ -61,21 +61,22 @@ void encodeFile(const char *fileInput, const char *fileOutput) {
 }
 
 void decodeFile(const char *fileInput, const char *fileOutput) {
-    ByteString file = readFile(fileInput);
+    FILE *fileIn = fopen(fileInput, "rb");
+    char unsigned byte = 0;
+    
     int unsigned treeLength = 0;
-    for (int unsigned i = 0; i < treeSizeLength; i++)
-        treeLength = treeLength * charMemory + file[i];
+    for (int unsigned i = 0; i < treeSizeLength; i++) {
+        fscanf(fileIn, "%c", &byte);
+        treeLength = treeLength * charMemory + byte;
+    }
+    
     int unsigned encodedLength = 0;
-    for (int unsigned i = 0; i < textSizeLength; i++)
-        encodedLength = encodedLength * charMemory + file[i + treeSizeLength];
+    for (int unsigned i = 0; i < textSizeLength; i++) {
+        fscanf(fileIn, "%c", &byte);
+        encodedLength = encodedLength * charMemory + byte;
+    }
     
-    file.erase(file.begin(), file.begin() + treeSizeLength + textSizeLength);
-    HuffmanTree tree(file, treeLength);
-    file.erase(file.begin(), file.begin() + (treeLength + 7) / 8);
-    
-    ByteString text = tree.decode(file, encodedLength);
-    
-    FILE *fileOut = fopen(fileOutput, "wb");
-    writeByteString(text, fileOut);
-    fclose(fileOut);
+    HuffmanTree tree(fileIn, treeLength);
+    tree.decode(fileIn, fileOutput, encodedLength);
+    fclose(fileIn);
 }

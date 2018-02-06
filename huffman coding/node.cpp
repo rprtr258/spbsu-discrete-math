@@ -23,21 +23,22 @@ void deleteNode(Node *&node) {
     delete node;
 }
 
-char decodeChar(Node *root, std::vector<char unsigned> str, int unsigned &i, int unsigned &bitIndex, int unsigned &decodedBits) {
+char decodeChar(Node *root, FILE *file, int unsigned &i, char unsigned &byte, int unsigned &bitIndex, int unsigned &decodedBits) {
     Node *temp = root;
         
     while (!isLeaf(temp)) {
-        char unsigned bit = (str[i] & (1 << (7 - bitIndex)));
+        char unsigned bit = (byte & (1 << (7 - bitIndex)));
         decodedBits++;
-        if (bit) {
-            temp = temp->r;
-        } else {
+        if (bit == 0)
             temp = temp->l;
-        }
+        else
+            temp = temp->r;
+
         bitIndex = bitIndex + 1;
         if (bitIndex == 8) {
             bitIndex = 0;
             i++;
+            fscanf(file, "%c", &byte);
         }
     }
     return temp->symbol;

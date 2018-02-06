@@ -15,7 +15,6 @@ bool doesFileExist(const char *filename) {
 // TODO: check empty file encoding
 // TODO: turn into utility
 // TODO: BASE64 encoding
-// TODO: encode/decode without reading file in RAM
 
 int main() {
     printf("Put message in \"file.txt\"\n");
