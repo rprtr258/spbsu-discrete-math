@@ -88,7 +88,7 @@ HuffmanTree::HuffmanTree(ByteString tree, int unsigned const treeSize) {
     std::stack<Node*> tempStack;
     
     for (int unsigned i = 0; i < treeSize; i++)
-        proccesSymbol(tempStack, tree[i + 3]);
+        proccesSymbol(tempStack, tree[i]);
     
     root = tempStack.top();
 }
