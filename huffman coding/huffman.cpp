@@ -124,29 +124,23 @@ HuffmanTree::~HuffmanTree() {
     deleteNode(root);
 }
 
-void writeCodes(Node *node, char unsigned *codes[alphabet], char unsigned buffer[alphabet], int const level = 0) {
+void writeCodes(Node *node, std::vector<bool> codes[alphabet], std::vector<bool> buffer = std::vector<bool>(), int const level = 0) {
     if (isLeaf(node)) {
         int unsigned const symbolCode = (int unsigned)node->symbol;
-        codes[symbolCode] = new char unsigned[level + 1];
-        memcpy(codes[symbolCode], buffer, level * sizeof(char unsigned));
-        codes[symbolCode][level] = '\0';
+        codes[symbolCode] = buffer;
         return;
     }
-    buffer[level] = '0';
+    buffer.push_back(false);
     writeCodes(node->l, codes, buffer, level + 1);
-    buffer[level] = '1';
+    buffer.pop_back();
+    buffer.push_back(true);
     writeCodes(node->r, codes, buffer, level + 1);
+    buffer.pop_back();
 }
 
 void HuffmanTree::encode(char const *filename, FILE *outFile) {
-    char unsigned *codes[alphabet];
-    char unsigned buffer[alphabet];
-    for (int unsigned i = 0; i < alphabet; i++) {
-        codes[i] = nullptr;
-        buffer[i] = '\0';
-    }
-    
-    writeCodes(root, codes, buffer);
+    std::vector<bool> codes[alphabet];
+    writeCodes(root, codes);
     
     int unsigned bitIndex = 0;
     FILE *file = fopen(filename, "rb");
@@ -158,8 +152,7 @@ void HuffmanTree::encode(char const *filename, FILE *outFile) {
         if (feof(file))
             break;
         int unsigned const charCode = (int unsigned)byte;
-        int unsigned codeLength = strlen(codes[charCode]);
-        for (int unsigned k = 0; k < codeLength; k++) {
+        for (int unsigned k = 0; k < codes[charCode].size(); k++) {
             if (bitIndex == 0) {
                 if (firstWrite)
                     firstWrite = false;
@@ -175,10 +168,6 @@ void HuffmanTree::encode(char const *filename, FILE *outFile) {
     if (bitIndex != 0)
         fprintf(outFile, "%c", outByte);
     fclose(file);
-
-    for (int unsigned i = 0; i < alphabet; i++)
-        if (codes[i] != nullptr)
-            delete[] codes[i];
 }
 
 void HuffmanTree::decode(FILE *fileIn, char const *filename, int unsigned const length) {
