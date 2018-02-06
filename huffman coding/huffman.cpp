@@ -137,7 +137,7 @@ void writeCodes(Node *node, char unsigned *codes[alphabet], char unsigned buffer
     writeCodes(node->r, codes, buffer, level + 1);
 }
 
-ByteString HuffmanTree::encode(char const *filename) {
+void HuffmanTree::encode(char const *filename, FILE *outFile) {
     char unsigned *codes[alphabet];
     char unsigned buffer[alphabet];
     for (int unsigned i = 0; i < alphabet; i++) {
@@ -147,9 +147,10 @@ ByteString HuffmanTree::encode(char const *filename) {
     
     writeCodes(root, codes, buffer);
     
-    ByteString result;
     int unsigned bitIndex = 0;
     FILE *file = fopen(filename, "rb");
+    char unsigned outByte = 0;
+    bool firstWrite = true;
     while (!feof(file)) {
         char unsigned byte = 0;
         fscanf(file, "%c", &byte);
@@ -158,20 +159,25 @@ ByteString HuffmanTree::encode(char const *filename) {
         int unsigned const charCode = (int unsigned)byte;
         int unsigned codeLength = strlen(codes[charCode]);
         for (int unsigned k = 0; k < codeLength; k++) {
-            if (bitIndex == 0)
-                result.push_back(0);
+            if (bitIndex == 0) {
+                if (firstWrite)
+                    firstWrite = false;
+                else
+                    fprintf(outFile, "%c", outByte);
+                outByte = 0;
+            }
             int unsigned bit = (codes[charCode][k] == '1');
-            result.back() |= (bit << (7 - bitIndex));
+            outByte |= (bit << (7 - bitIndex));
             bitIndex = (bitIndex + 1) % 8;
         }
     }
+    if (bitIndex != 0)
+        fprintf(outFile, "%c", outByte);
     fclose(file);
 
     for (int unsigned i = 0; i < alphabet; i++)
         if (codes[i] != nullptr)
             delete[] codes[i];
-
-    return result;
 }
 
 ByteString HuffmanTree::decode(ByteString str, int unsigned const length) {
