@@ -10,7 +10,6 @@ bool doesFileExist(const char *filename) {
     return true;
 }
 
-// TODO: fix bits
 // TODO: fix one-symbol text
 //       add 2 symbols at the end & remove them in decoding
 // TODO: turn into utility

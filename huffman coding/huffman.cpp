@@ -93,29 +93,24 @@ HuffmanTree::HuffmanTree(ByteString tree, int unsigned const treeSize) {
         if (tree[byteIndex] & (1 << (7 - bitIndex))) {
             length++;
             mergeNodes(tempStack);
-            bitIndex++;
-            if (bitIndex == 8) {
-                bitIndex = 0;
-                byteIndex++;
-            }
         } else {
             length += 9;
-            bitIndex++;
-            if (bitIndex == 8) {
-                bitIndex = 0;
-                byteIndex++;
-            }
             char unsigned symbol = 0;
             for (int unsigned i = 0; i < 8; i++) {
-                int unsigned bit = tree[byteIndex] & (1 << (7 - bitIndex));
-                symbol |= (bit << bitIndex) >> i;
                 bitIndex++;
                 if (bitIndex == 8) {
                     bitIndex = 0;
                     byteIndex++;
                 }
+                int unsigned bit = tree[byteIndex] & (1 << (7 - bitIndex));
+                symbol |= (bit << bitIndex) >> i;
             }
             pushNode(tempStack, symbol);
+        }
+        bitIndex++;
+        if (bitIndex == 8) {
+            bitIndex = 0;
+            byteIndex++;
         }
     }
     
@@ -142,7 +137,7 @@ void writeCodes(Node *node, char unsigned *codes[alphabet], char unsigned buffer
     writeCodes(node->r, codes, buffer, level + 1);
 }
 
-ByteString HuffmanTree::encode(ByteString str) {
+ByteString HuffmanTree::encode(ByteString str, int unsigned &length) {
     char unsigned *codes[alphabet];
     char unsigned buffer[alphabet];
     for (int unsigned i = 0; i < alphabet; i++) {
@@ -153,13 +148,18 @@ ByteString HuffmanTree::encode(ByteString str) {
     writeCodes(root, codes, buffer);
     
     ByteString result;
-    int j = 0;
+    int unsigned bitIndex = 0;
     for (int unsigned i = 0; i < str.size(); i++) {
-        int unsigned const symbolCode = (int)str[i];
-        int unsigned codeLength = strlen(codes[symbolCode]);
-        for (int unsigned k = 0; k < codeLength; k++)
-            result.push_back(codes[symbolCode][k]);
-        j += codeLength;
+        int unsigned const charCode = (int)str[i];
+        int unsigned codeLength = strlen(codes[charCode]);
+        length += codeLength;
+        for (int unsigned k = 0; k < codeLength; k++) {
+            if (bitIndex == 0)
+                result.push_back(0);
+            int unsigned bit = (codes[charCode][k] == '1');
+            result.back() |= (bit << (7 - bitIndex));
+            bitIndex = (bitIndex + 1) % 8;
+        }
     }
 
     for (int unsigned i = 0; i < alphabet; i++)
@@ -171,8 +171,11 @@ ByteString HuffmanTree::encode(ByteString str) {
 
 ByteString HuffmanTree::decode(ByteString str, int unsigned const length) {
     ByteString result;
-    for (int unsigned i = 0; i < length; i++) {
-        char unsigned newSymbol = decodeChar(root, str, i);
+    int unsigned bitIndex = 0;
+    int unsigned i = 0;
+    int unsigned decodedBits = 0;
+    while (decodedBits < length) {
+        char unsigned newSymbol = decodeChar(root, str, i, bitIndex, decodedBits);
         result.push_back(newSymbol);
     }
     return result;
@@ -181,7 +184,9 @@ ByteString HuffmanTree::decode(ByteString str, int unsigned const length) {
 void saveNode(Node *node, ByteString &res, int unsigned &bitIndex, int unsigned &length) {
     if (node == nullptr) {
         return;
-    } else if (isLeaf(node)) {
+    }
+    
+    if (isLeaf(node)) {
         char unsigned byte = node->symbol;
         length += 9;
         if (bitIndex == 0)

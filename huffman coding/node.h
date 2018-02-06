@@ -13,6 +13,6 @@ Node* createNode(char unsigned const symbol, int const frequency = 0);
 
 void deleteNode(Node *&node);
 
-char decodeChar(Node *root, std::vector<char unsigned> str, int unsigned &i);
+char decodeChar(Node *root, std::vector<char unsigned> str, int unsigned &i, int unsigned &bitIndex, int unsigned &decodedBits);
 
 bool isLeaf(Node *node);
