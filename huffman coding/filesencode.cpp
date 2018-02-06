@@ -3,7 +3,6 @@
 #include <vector>
 #include "filesencode.h"
 #include "huffman.h"
-#include "putChar.h"
 
 typedef std::vector<char unsigned> ByteString;
 

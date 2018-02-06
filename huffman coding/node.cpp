@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <math.h>
-#include "putChar.h"
 #include "node.h"
 
 Node* createNode(Node *leftChild, Node *rightChild) {
@@ -27,9 +26,7 @@ void deleteNode(Node *&node) {
 char decodeChar(Node *root, std::vector<char unsigned> str, int unsigned &i) {
     Node *temp = root;
     char unsigned bit = str[i];
-    //printf("\"");
     while (i < str.size() && !isLeaf(temp)) {
-        //printf("%c", bit);
         switch (bit) {
             case '0': {
                 temp = temp->l;
@@ -50,7 +47,6 @@ char decodeChar(Node *root, std::vector<char unsigned> str, int unsigned &i) {
         i++;
         bit = str[i];
     }
-    //printf("\"\n");
     return temp->symbol;
 }
 

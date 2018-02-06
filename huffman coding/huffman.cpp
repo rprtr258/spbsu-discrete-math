@@ -5,7 +5,6 @@
 #include <stack>
 #include "node.h"
 #include "freqtable.h"
-#include "putChar.h"
 #include "huffman.h"
 
 int unsigned const alphabet = 256;
