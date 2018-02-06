@@ -22,7 +22,7 @@ Node* getRarestNode(std::queue<Node*> &firstQueue, std::queue<Node*> &secondQueu
     Node *result = nullptr;
     if (firstQueue.size() == 0) {
         result = secondQueue.front();
-	secondQueue.pop();
+        secondQueue.pop();
     } else if (secondQueue.size() == 0) {
         result = firstQueue.front();
         firstQueue.pop();
@@ -33,10 +33,10 @@ Node* getRarestNode(std::queue<Node*> &firstQueue, std::queue<Node*> &secondQueu
         if (tempFirst->frequency < tempSecond->frequency) {
             result = tempFirst;
             firstQueue.pop();
-	} else {
-	    result = tempSecond;
-	    secondQueue.pop();
-	}
+        } else {
+            result = tempSecond;
+            secondQueue.pop();
+        }
     }
     return result;
 };
@@ -169,30 +169,3 @@ ByteString HuffmanTree::asString() {
     return result;
 }
 
-void push(ByteString &str, const char *text) {
-    for (int unsigned i = 0; text[i] != '\0'; i++)
-        str.push_back(text[i]);
-}
-
-ByteString HuffmanTree::getInfo() {
-    int textLength = 1;
-    ByteString buffer;
-    double entropy = getEntropy(root, textLength);
-    int codeLength = getCodeLength(root);
-    ByteString codesInfo = saveNodeInfo(root, buffer, textLength);
-    ByteString result;
-    push(result, "Frequency table:\n");
-    //push(result, codesInfo);
-    
-    /*sprintf(result, "Entropy: %.20f\n", entropy);
-    if (codeLength > 0) {
-        sprintf(result, "Expected code length: %.20f\n", (double)codeLength / textLength);
-        sprintf(result, "Length of text(in bytes): %d\n", textLength);
-        sprintf(result, "Length of encoded text(in bytes): %d\n", codeLength / 8);
-        sprintf(result, "Compression coeff.: %.20f\n", textLength / (codeLength / 8.0));
-    } else {
-        sprintf(result, "No info about text found\n");
-    }*/
-
-    return result;
-}

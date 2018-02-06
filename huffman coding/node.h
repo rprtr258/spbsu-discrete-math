@@ -16,8 +16,3 @@ void deleteNode(Node *&node);
 char decodeChar(Node *root, std::vector<char unsigned> str, int unsigned &i);
 
 bool isLeaf(Node *node);
-int getHeight(Node *node);
-int getCodeLength(Node *node, int const level = 0);
-double getEntropy(Node *node, int const textLength);
-
-std::vector<char unsigned> saveNodeInfo(Node *node, std::vector<char unsigned> buffer, int const textLength, int const level = 0);

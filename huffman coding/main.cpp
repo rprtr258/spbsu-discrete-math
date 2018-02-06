@@ -35,7 +35,7 @@ int main() {
         return 0;
     }
     
-    encodeFile("file.txt", "encoded.txt", "codeInfo.txt");
+    encodeFile("file.txt", "encoded.txt");
     decodeFile("encoded.txt", "decoded.txt");
     
     printf("Done!\n");

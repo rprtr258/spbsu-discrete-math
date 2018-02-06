@@ -27,17 +27,12 @@ void writeByteString(ByteString const &string, FILE *file) {
         fprintf(file, "%c", byte);
 }
 
-void encodeFile(const char *fileInput, const char *fileOutput, const char *fileInfo) {
+void encodeFile(const char *fileInput, const char *fileOutput) {
     ByteString str = readFile(fileInput);
     
     HuffmanTree tree(str);
     ByteString encodedString = tree.encode(str);
     ByteString savedTree = tree.asString();
-    
-    FILE *infoFile = fopen(fileInfo, "w");
-    ByteString treeInfo = tree.getInfo();
-    writeByteString(treeInfo, infoFile);
-    fclose(infoFile);
     
     FILE *outFile = fopen(fileOutput, "wb");
     fprintf(outFile, "%03u", savedTree.size());
