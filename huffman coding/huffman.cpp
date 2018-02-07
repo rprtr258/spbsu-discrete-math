@@ -124,23 +124,24 @@ HuffmanTree::~HuffmanTree() {
     deleteNode(root);
 }
 
-void writeCodes(Node *node, std::vector<bool> codes[alphabet], std::vector<bool> buffer = std::vector<bool>(), int const level = 0) {
+void writeCodes(Node *node, std::vector<bool> codes[alphabet], std::vector<bool> &buffer) {
     if (isLeaf(node)) {
-        int unsigned const symbolCode = (int unsigned)node->symbol;
-        codes[symbolCode] = buffer;
+        codes[node->symbol] = buffer;
         return;
     }
-    buffer.push_back(false);
-    writeCodes(node->l, codes, buffer, level + 1);
+    buffer.push_back(0);
+    writeCodes(node->l, codes, buffer);
     buffer.pop_back();
-    buffer.push_back(true);
-    writeCodes(node->r, codes, buffer, level + 1);
+    buffer.push_back(1);
+    writeCodes(node->r, codes, buffer);
     buffer.pop_back();
 }
 
 void HuffmanTree::encode(char const *filename, FILE *outFile) {
     std::vector<bool> codes[alphabet];
-    writeCodes(root, codes);
+    std::vector<bool> buffer;
+    
+    writeCodes(root, codes, buffer);
     
     int unsigned bitIndex = 0;
     FILE *file = fopen(filename, "rb");
@@ -152,7 +153,8 @@ void HuffmanTree::encode(char const *filename, FILE *outFile) {
         if (feof(file))
             break;
         int unsigned const charCode = (int unsigned)byte;
-        for (int unsigned k = 0; k < codes[charCode].size(); k++) {
+        int unsigned codeLength = codes[charCode].size();
+        for (int unsigned k = 0; k < codeLength; k++) {
             if (bitIndex == 0) {
                 if (firstWrite)
                     firstWrite = false;
@@ -160,7 +162,7 @@ void HuffmanTree::encode(char const *filename, FILE *outFile) {
                     fprintf(outFile, "%c", outByte);
                 outByte = 0;
             }
-            int unsigned bit = (codes[charCode][k] == '1');
+            int unsigned bit = codes[charCode][k];
             outByte |= (bit << (7 - bitIndex));
             bitIndex = (bitIndex + 1) % 8;
         }
@@ -224,4 +226,3 @@ ByteString HuffmanTree::asString(int unsigned &length) {
     saveNode(root, result, bitIndex, length);
     return result;
 }
-
