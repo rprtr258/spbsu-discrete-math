@@ -87,35 +87,27 @@ void mergeNodes(std::stack<Node*> &stack) {
 HuffmanTree::HuffmanTree(FILE *fileIn, int unsigned const treeSize) {
     std::stack<Node*> tempStack;
     
-    int unsigned bitIndex = 0;
     char unsigned byte = 0;
-    fscanf(fileIn, "%c", &byte);
     int unsigned length = 0;
     while (length < treeSize) {
+        if (length % 8 == 0)
+            fscanf(fileIn, "%c", &byte);
+        
+        int unsigned bitIndex = length % 8;
         if (byte & (1 << (7 - bitIndex))) {
-            length++;
             mergeNodes(tempStack);
-            bitIndex++;
-            if (bitIndex == 8) {
-                bitIndex = 0;
-                fscanf(fileIn, "%c", &byte);
-            }
+            length++;
         } else {
-            length += 9;
             char unsigned symbol = 0;
             if (bitIndex == 7) {
                 fscanf(fileIn, "%c", &symbol);
-                if (length < treeSize) {
-                    bitIndex = 0;
-                    fscanf(fileIn, "%c", &byte);
-                }
             } else {
                 symbol |= (byte << (bitIndex + 1));
                 fscanf(fileIn, "%c", &byte);
                 symbol |= (byte >> (7 - bitIndex));
-                bitIndex = (bitIndex + 9) % 8;
             }
             pushNode(tempStack, symbol);
+            length += 9;
         }
     }
     
