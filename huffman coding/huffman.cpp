@@ -8,6 +8,7 @@
 #include "huffman.h"
 
 int unsigned const alphabet = 256;
+char unsigned const firstBit = (1 << 7);
 
 int unsigned strlen(char unsigned const *str) {
     int unsigned result = 0;
@@ -138,7 +139,6 @@ void writeCodes(Node *node, std::vector<bool> codes[alphabet], std::vector<bool>
 }
 
 void HuffmanTree::encode(char const *filename, FILE *outFile) {
-    char unsigned const firstBit = (1 << 7);
     std::vector<bool> codes[alphabet];
     std::vector<bool> buffer;
     
@@ -163,7 +163,7 @@ void HuffmanTree::encode(char const *filename, FILE *outFile) {
                     fprintf(outFile, "%c", outByte);
                 outByte = 0;
             }
-            int unsigned bit = codes[charCode][k];
+            bool bit = codes[charCode][k];
             outByte |= bit * bitMask;
             bitMask >>= 1;
             if (bitMask == 0)
@@ -176,14 +176,13 @@ void HuffmanTree::encode(char const *filename, FILE *outFile) {
 }
 
 void HuffmanTree::decode(FILE *fileIn, char const *filename, int unsigned const length) {
-    int unsigned bitIndex = 0;
-    int unsigned i = 0;
+    char unsigned bitMask = firstBit;
     int unsigned decodedBits = 0;
     char unsigned byte = 0;
     fscanf(fileIn, "%c", &byte);
     FILE *fileOut = fopen(filename, "wb");
     while (decodedBits < length) {
-        char unsigned newSymbol = decodeChar(root, fileIn, i, byte, bitIndex, decodedBits);
+        char unsigned newSymbol = decodeChar(root, fileIn, byte, bitMask, decodedBits);
         fprintf(fileOut, "%c", newSymbol);
     }
     fclose(fileOut);

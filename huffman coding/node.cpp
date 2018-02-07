@@ -23,21 +23,20 @@ void deleteNode(Node *&node) {
     delete node;
 }
 
-char decodeChar(Node *root, FILE *file, int unsigned &i, char unsigned &byte, int unsigned &bitIndex, int unsigned &decodedBits) {
+char decodeChar(Node *root, FILE *file, char unsigned &byte, char unsigned &bitMask, int unsigned &decodedBits) {
     Node *temp = root;
         
     while (!isLeaf(temp)) {
-        char unsigned bit = (byte & (1 << (7 - bitIndex)));
+        char unsigned bit = (byte & bitMask);
         decodedBits++;
         if (bit == 0)
             temp = temp->l;
         else
             temp = temp->r;
 
-        bitIndex = bitIndex + 1;
-        if (bitIndex == 8) {
-            bitIndex = 0;
-            i++;
+        bitMask >>= 1;
+        if (bitMask == 0) {
+            bitMask = (1 << 7);
             fscanf(file, "%c", &byte);
         }
     }
