@@ -95,24 +95,27 @@ HuffmanTree::HuffmanTree(FILE *fileIn, int unsigned const treeSize) {
         if (byte & (1 << (7 - bitIndex))) {
             length++;
             mergeNodes(tempStack);
+            bitIndex++;
+            if (bitIndex == 8) {
+                bitIndex = 0;
+                fscanf(fileIn, "%c", &byte);
+            }
         } else {
             length += 9;
             char unsigned symbol = 0;
-            for (int unsigned i = 0; i < 8; i++) {
-                bitIndex++;
-                if (bitIndex == 8) {
+            if (bitIndex == 7) {
+                fscanf(fileIn, "%c", &symbol);
+                if (length < treeSize) {
                     bitIndex = 0;
                     fscanf(fileIn, "%c", &byte);
                 }
-                int unsigned bit = byte & (1 << (7 - bitIndex));
-                symbol |= (bit << bitIndex) >> i;
+            } else {
+                symbol |= (byte << (bitIndex + 1));
+                fscanf(fileIn, "%c", &byte);
+                symbol |= (byte >> (7 - bitIndex));
+                bitIndex = (bitIndex + 9) % 8;
             }
             pushNode(tempStack, symbol);
-        }
-        bitIndex++;
-        if (bitIndex == 8) {
-            bitIndex = 0;
-            fscanf(fileIn, "%c", &byte);
         }
     }
     
