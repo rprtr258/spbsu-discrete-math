@@ -138,12 +138,13 @@ void writeCodes(Node *node, std::vector<bool> codes[alphabet], std::vector<bool>
 }
 
 void HuffmanTree::encode(char const *filename, FILE *outFile) {
+    char unsigned const firstBit = (1 << 7);
     std::vector<bool> codes[alphabet];
     std::vector<bool> buffer;
     
     writeCodes(root, codes, buffer);
     
-    int unsigned bitIndex = 0;
+    char unsigned bitMask = firstBit;
     FILE *file = fopen(filename, "rb");
     char unsigned outByte = 0;
     bool firstWrite = true;
@@ -155,7 +156,7 @@ void HuffmanTree::encode(char const *filename, FILE *outFile) {
         int unsigned const charCode = (int unsigned)byte;
         int unsigned codeLength = codes[charCode].size();
         for (int unsigned k = 0; k < codeLength; k++) {
-            if (bitIndex == 0) {
+            if (bitMask == firstBit) {
                 if (firstWrite)
                     firstWrite = false;
                 else
@@ -163,11 +164,13 @@ void HuffmanTree::encode(char const *filename, FILE *outFile) {
                 outByte = 0;
             }
             int unsigned bit = codes[charCode][k];
-            outByte |= (bit << (7 - bitIndex));
-            bitIndex = (bitIndex + 1) % 8;
+            outByte |= bit * bitMask;
+            bitMask >>= 1;
+            if (bitMask == 0)
+                bitMask = firstBit;
         }
     }
-    if (bitIndex != 0)
+    if (bitMask != firstBit)
         fprintf(outFile, "%c", outByte);
     fclose(file);
 }
