@@ -11,10 +11,9 @@ bool doesFileExist(const char *filename) {
 }
 
 // TODO: fix one-symbol text
-//       add 2 symbols at the end & remove them in decoding
 // TODO: check empty file encoding
-// TODO: turn into utility
-// TODO: BASE64 encoding
+// TODO: process command line args
+// TODO: make tests(using bash?)
 
 int main() {
     printf("Put message in \"file.txt\"\n");
