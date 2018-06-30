@@ -4,7 +4,7 @@ VPTree::VPTree(vector<string> list) {
     root = new Node(list, dist);
 }
 
-VPTree::VPTree(vector<string> list, int (*strDist)(string, string)) {
+VPTree::VPTree(vector<string> list, MetricFunction strDist) {
     dist = strDist;
     root = new Node(list, strDist);
     return;
@@ -14,6 +14,10 @@ VPTree::~VPTree() {
     delete root;
 }
 
-string VPTree::findNearest(string str) {
-    return root->findNearest(str);
+vector<string> VPTree::findNearest(string str, int prec) {
+    return root->findNearest(str, prec);
+}
+
+MetricFunction VPTree::getDist() {
+    return dist;
 }

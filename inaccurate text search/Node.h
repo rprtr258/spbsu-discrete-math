@@ -9,9 +9,11 @@ class Node {
         Node *inner = nullptr;
         Node *outer = nullptr;
         int (*dist)(string, string) = nullptr;
-        string data = nullptr;
+        string data = "";
         int radius = -1;
     public:
         Node(vector<string> list, int (*strDist)(string, string));
-        string findNearest(string str);
+        ~Node();
+        
+        vector<string> findNearest(string str, int prec);
 };

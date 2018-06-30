@@ -1,0 +1,8 @@
+make
+echo "kapa"; echo "kapa" | ./a.exe
+echo "Kppa"; echo "Kppa" | ./a.exe
+echo "SeemsGood"; echo "SeemsGood" | ./a.exe
+echo "SeemsGod"; echo "SeemsGod" | ./a.exe
+echo "Pogchamp"; echo "Pogchamp" | ./a.exe
+echo "OmegaLUL"; echo "OmegaLUL" | ./a.exe
+echo "KappaRos"; echo "KappaRos" | ./a.exe
