@@ -6,7 +6,7 @@ VPTree::VPTree(vector<string> list) {
 
 VPTree::VPTree(vector<string> list, int (*strDist)(string, string)) {
     dist = strDist;
-    //root = new Node(list, strDist);
+    root = new Node(list, strDist);
     return;
 }
 
