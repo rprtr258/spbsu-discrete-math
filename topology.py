@@ -66,7 +66,7 @@ def printSolution(A, topology):
     print("Int Cl Int A: %s" % niceLook(ind_cl_ind))
     xxx = len(set([A, cl, ind, cl_ind, ind_cl, cl_ind_cl, ind_cl_ind]))
     print("Overall: %d" % xxx)
-    
+
 def countMax(topology):
     V = theSet(topology)
     mx = -1

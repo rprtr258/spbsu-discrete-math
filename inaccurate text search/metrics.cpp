@@ -46,7 +46,3 @@ int editDistance(string str1, string str2) {
 
   return matrix[m][n];
 }
-
-int discreteDistance(string str1, string str2) {
-    return (str1 != str2);
-}
