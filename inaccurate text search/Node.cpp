@@ -17,23 +17,23 @@ Node::Node(vector<string> &list, int l, int r, int (*strDist)(string, string)) {
     data = vantage;
     radius = dist(vantage, list[r - 1]) / 2;
     
-    partition(list.begin() + l, list.begin() + r, [&](string s){
+    partition(list.begin() + l + 1, list.begin() + r, [&](string s){
         return dist(s, vantage) <= radius;
     });
     
-    int i = l - 1;
-    while (i + 1 < r && dist(list[i + 1], vantage) <= radius)
+    int i = l + 1;
+    while (i < r && dist(list[i], vantage) <= radius)
         i++;
     
-    if (i == l - 1)
+    if (i == l + 1)
         inner = nullptr;
     else
-        inner = new Node(list, l, i, strDist);
+        inner = new Node(list, l + 1, i, strDist);
     
-    if (i + 1 < r)
+    if (i == r)
         outer = nullptr;
     else
-        outer = new Node(list, i + 1, r, strDist);
+        outer = new Node(list, i, r, strDist);
 }
 
 Node::~Node() {

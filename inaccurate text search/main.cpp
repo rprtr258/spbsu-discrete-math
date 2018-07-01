@@ -8,9 +8,7 @@
 
 using namespace std;
 
-int editAdvancedDistance(string str1, string str2) {
-    int result = editDistance(str1, str2);
-    
+int editIgnoreCaseDistance(string str1, string str2) {
     for (int unsigned i = 0; i < str1.length(); i++)
         if ('A' <= str1[i] && str1[i] <= 'Z')
             str1[i] = str1[i] - 'A' + 'a';
@@ -19,9 +17,7 @@ int editAdvancedDistance(string str1, string str2) {
         if ('A' <= str2[i] && str2[i] <= 'Z')
             str2[i] = str2[i] - 'A' + 'a';
     
-    result += editDistance(str1, str2) * 3;
-    
-    return result;
+    return editDistance(str1, str2);
 }
 
 VPTree* constructTreeFromFile(string filename) {
@@ -35,7 +31,7 @@ VPTree* constructTreeFromFile(string filename) {
         words.push_back(newWord);
     }
     sort(words.begin(), words.end());
-    return new VPTree(words, editAdvancedDistance);
+    return new VPTree(words, editIgnoreCaseDistance);
 }
 
 vector<string> findSimilar(string str, VPTree *tree) {
