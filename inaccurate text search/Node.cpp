@@ -1,45 +1,39 @@
 #include <string>
 #include <vector>
-#include <iostream>
+#include <algorithm>
 #include "Node.h"
 
 using namespace std;
 
-Node::Node(vector<string> list, int (*strDist)(string, string)) {
+Node::Node(vector<string> &list, int l, int r, int (*strDist)(string, string)) {
     dist = strDist;
-    if (list.size() == 1) {
+    if (r == l + 1) {
         radius = 0;
-        data = list[0];
+        data = list[l];
         return;
     }
     
-    int unsigned mid = list.size() / 2;
-    string vantage = list[mid];
+    string vantage = list[l];
     data = vantage;
-    for (string s : list)
-        radius = max(radius, dist(vantage, s));
-    //radius = radius / 2;
-    radius = min(3, radius);
+    radius = dist(vantage, list[r - 1]) / 2;
     
-    vector<string> inside;
-    vector<string> outside;
-    for (string s : list)
-        if (dist(vantage, s) == 0)
-            continue;
-        else if (dist(vantage, s) <= radius)
-            inside.push_back(s);
-        else
-            outside.push_back(s);
+    partition(list.begin() + l, list.begin() + r, [&](string s){
+        return dist(s, vantage) <= radius;
+    });
     
-    if (inside.size() == 0)
+    int i = l - 1;
+    while (i + 1 < r && dist(list[i + 1], vantage) <= radius)
+        i++;
+    
+    if (i == l - 1)
         inner = nullptr;
     else
-        inner = new Node(inside, strDist);
+        inner = new Node(list, l, i, strDist);
     
-    if (outside.size() == 0)
+    if (i + 1 < r)
         outer = nullptr;
     else
-        outer = new Node(outside, strDist);
+        outer = new Node(list, i + 1, r, strDist);
 }
 
 Node::~Node() {
@@ -50,9 +44,6 @@ Node::~Node() {
 }
 
 vector<string> Node::findNearest(string str, int prec) {
-    //cout << "(" << data << ", " << radius << ")" << endl;
-    //cout << "d(" << str << ", " << data << ") = " << dist(data, str) << endl;
-    
     int d = dist(data, str);
     vector<string> result;
     

@@ -11,10 +11,9 @@ typedef int (*MetricFunction)(string, string);
 class VPTree {
     private:
         Node *root = nullptr;
-        MetricFunction dist = discreteDistance;
+        MetricFunction dist = nullptr;
     public:
-        VPTree(vector<string>);
-        VPTree(vector<string>, MetricFunction);
+        VPTree(vector<string>&, MetricFunction);
         ~VPTree();
         
         vector<string> findNearest(string, int);

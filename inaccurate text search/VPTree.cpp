@@ -1,12 +1,8 @@
 #include "VPTree.h"
 
-VPTree::VPTree(vector<string> list) {
-    root = new Node(list, dist);
-}
-
-VPTree::VPTree(vector<string> list, MetricFunction strDist) {
+VPTree::VPTree(vector<string> &list, MetricFunction strDist) {
     dist = strDist;
-    root = new Node(list, strDist);
+    root = new Node(list, 0, list.size(), strDist);
     return;
 }
 
