@@ -8,6 +8,7 @@
 #include "huffman.h"
 
 int unsigned const alphabet = 256;
+char unsigned const firstBit = (1 << 7);
 
 int unsigned strlen(char unsigned const *str) {
     int unsigned result = 0;
@@ -47,10 +48,10 @@ void proccessTwoRarest(std::queue<Node*> &firstQueue, std::queue<Node*> &secondQ
     secondQueue.push(parent);
 }
 
-Node* buildTree(ByteString str) {
+Node* buildTree(char const *filename) {
     std::queue<Node*> firstQueue;
     std::queue<Node*> secondQueue;
-    FrequencyTable ftable(str);
+    FrequencyTable ftable(filename);
     
     for (int unsigned i = 0; i < ftable.getSize(); i++) {
         Node *leaf = createNode(ftable[i].first, ftable[i].second);
@@ -64,8 +65,8 @@ Node* buildTree(ByteString str) {
     return result;
 }
 
-HuffmanTree::HuffmanTree(ByteString str) {
-    root = buildTree(str);
+HuffmanTree::HuffmanTree(char const *filename) {
+    root = buildTree(filename);
 }
 
 void pushNode(std::stack<Node*> &stack, char const symbol) {
@@ -83,34 +84,30 @@ void mergeNodes(std::stack<Node*> &stack) {
     stack.push(node);
 }
 
-HuffmanTree::HuffmanTree(ByteString tree, int unsigned const treeSize) {
+HuffmanTree::HuffmanTree(FILE *fileIn, int unsigned const treeSize) {
     std::stack<Node*> tempStack;
     
-    int unsigned bitIndex = 0;
-    int unsigned byteIndex = 0;
+    char unsigned byte = 0;
     int unsigned length = 0;
     while (length < treeSize) {
-        if (tree[byteIndex] & (1 << (7 - bitIndex))) {
-            length++;
+        if (length % 8 == 0)
+            fscanf(fileIn, "%c", &byte);
+        
+        int unsigned bitIndex = length % 8;
+        if (byte & (1 << (7 - bitIndex))) {
             mergeNodes(tempStack);
+            length++;
         } else {
-            length += 9;
             char unsigned symbol = 0;
-            for (int unsigned i = 0; i < 8; i++) {
-                bitIndex++;
-                if (bitIndex == 8) {
-                    bitIndex = 0;
-                    byteIndex++;
-                }
-                int unsigned bit = tree[byteIndex] & (1 << (7 - bitIndex));
-                symbol |= (bit << bitIndex) >> i;
+            if (bitIndex == 7) {
+                fscanf(fileIn, "%c", &symbol);
+            } else {
+                symbol |= (byte << (bitIndex + 1));
+                fscanf(fileIn, "%c", &byte);
+                symbol |= (byte >> (7 - bitIndex));
             }
             pushNode(tempStack, symbol);
-        }
-        bitIndex++;
-        if (bitIndex == 8) {
-            bitIndex = 0;
-            byteIndex++;
+            length += 9;
         }
     }
     
@@ -123,62 +120,67 @@ HuffmanTree::~HuffmanTree() {
     deleteNode(root);
 }
 
-void writeCodes(Node *node, char unsigned *codes[alphabet], char unsigned buffer[alphabet], int const level = 0) {
+void writeCodes(Node *node, std::vector<bool> codes[alphabet], std::vector<bool> &buffer) {
     if (isLeaf(node)) {
-        int unsigned const symbolCode = (int unsigned)node->symbol;
-        codes[symbolCode] = new char unsigned[level + 1];
-        memcpy(codes[symbolCode], buffer, level * sizeof(char unsigned));
-        codes[symbolCode][level] = '\0';
+        codes[node->symbol] = buffer;
         return;
     }
-    buffer[level] = '0';
-    writeCodes(node->l, codes, buffer, level + 1);
-    buffer[level] = '1';
-    writeCodes(node->r, codes, buffer, level + 1);
+    buffer.push_back(0);
+    writeCodes(node->l, codes, buffer);
+    buffer.pop_back();
+    buffer.push_back(1);
+    writeCodes(node->r, codes, buffer);
+    buffer.pop_back();
 }
 
-ByteString HuffmanTree::encode(ByteString str, int unsigned &length) {
-    char unsigned *codes[alphabet];
-    char unsigned buffer[alphabet];
-    for (int unsigned i = 0; i < alphabet; i++) {
-        codes[i] = nullptr;
-        buffer[i] = '\0';
-    }
+void HuffmanTree::encode(char const *filename, FILE *outFile) {
+    std::vector<bool> codes[alphabet];
+    std::vector<bool> buffer;
     
     writeCodes(root, codes, buffer);
     
-    ByteString result;
-    int unsigned bitIndex = 0;
-    for (int unsigned i = 0; i < str.size(); i++) {
-        int unsigned const charCode = (int)str[i];
-        int unsigned codeLength = strlen(codes[charCode]);
-        length += codeLength;
+    char unsigned bitMask = firstBit;
+    FILE *file = fopen(filename, "rb");
+    char unsigned outByte = 0;
+    bool firstWrite = true;
+    while (!feof(file)) {
+        char unsigned byte = 0;
+        fscanf(file, "%c", &byte);
+        if (feof(file))
+            break;
+        int unsigned const charCode = (int unsigned)byte;
+        int unsigned codeLength = codes[charCode].size();
         for (int unsigned k = 0; k < codeLength; k++) {
-            if (bitIndex == 0)
-                result.push_back(0);
-            int unsigned bit = (codes[charCode][k] == '1');
-            result.back() |= (bit << (7 - bitIndex));
-            bitIndex = (bitIndex + 1) % 8;
+            if (bitMask == firstBit) {
+                if (firstWrite)
+                    firstWrite = false;
+                else
+                    fprintf(outFile, "%c", outByte);
+                outByte = 0;
+            }
+            bool bit = codes[charCode][k];
+            outByte |= bit * bitMask;
+            bitMask >>= 1;
+            if (bitMask == 0)
+                bitMask = firstBit;
         }
     }
-
-    for (int unsigned i = 0; i < alphabet; i++)
-        if (codes[i] != nullptr)
-            delete[] codes[i];
-
-    return result;
+    if (bitMask != firstBit)
+        fprintf(outFile, "%c", outByte);
+    fclose(file);
 }
 
-ByteString HuffmanTree::decode(ByteString str, int unsigned const length) {
-    ByteString result;
-    int unsigned bitIndex = 0;
-    int unsigned i = 0;
+void HuffmanTree::decode(FILE *fileIn, char const *filename, int unsigned const length) {
+    char unsigned bitMask = firstBit;
     int unsigned decodedBits = 0;
+    char unsigned byte = 0;
+    fscanf(fileIn, "%c", &byte);
+    FILE *fileOut = fopen(filename, "wb");
     while (decodedBits < length) {
-        char unsigned newSymbol = decodeChar(root, str, i, bitIndex, decodedBits);
-        result.push_back(newSymbol);
+        char unsigned newSymbol = decodeChar(root, fileIn, byte, bitMask, decodedBits);
+        fprintf(fileOut, "%c", newSymbol);
     }
-    return result;
+    fclose(fileOut);
 }
 
 void saveNode(Node *node, ByteString &res, int unsigned &bitIndex, int unsigned &length) {
@@ -211,10 +213,13 @@ void saveNode(Node *node, ByteString &res, int unsigned &bitIndex, int unsigned 
     }
 }
 
+int unsigned HuffmanTree::getResultLength() {
+    return calcResultLength(root);
+}
+
 ByteString HuffmanTree::asString(int unsigned &length) {
     ByteString result;
     int unsigned bitIndex = 0;
     saveNode(root, result, bitIndex, length);
     return result;
 }
-

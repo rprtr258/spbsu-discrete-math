@@ -23,24 +23,31 @@ void deleteNode(Node *&node) {
     delete node;
 }
 
-char decodeChar(Node *root, std::vector<char unsigned> str, int unsigned &i, int unsigned &bitIndex, int unsigned &decodedBits) {
+char decodeChar(Node *root, FILE *file, char unsigned &byte, char unsigned &bitMask, int unsigned &decodedBits) {
     Node *temp = root;
         
     while (!isLeaf(temp)) {
-        char unsigned bit = (str[i] & (1 << (7 - bitIndex)));
+        char unsigned bit = (byte & bitMask);
         decodedBits++;
-        if (bit) {
-            temp = temp->r;
-        } else {
+        if (bit == 0)
             temp = temp->l;
-        }
-        bitIndex = bitIndex + 1;
-        if (bitIndex == 8) {
-            bitIndex = 0;
-            i++;
+        else
+            temp = temp->r;
+
+        bitMask >>= 1;
+        if (bitMask == 0) {
+            bitMask = (1 << 7);
+            fscanf(file, "%c", &byte);
         }
     }
     return temp->symbol;
+}
+
+int unsigned calcResultLength(Node *node, int unsigned const level) {
+    if (isLeaf(node))
+        return node->frequency * level;
+    return calcResultLength(node->l, level + 1) +
+           calcResultLength(node->r, level + 1);
 }
 
 bool isLeaf(Node *node) {
