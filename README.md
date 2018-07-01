@@ -5,4 +5,3 @@ TODO:
     BW
     search substr Boiler-Moor
     search substr KMP
-    Huffman (test huffman with key words of c++ as chars)
