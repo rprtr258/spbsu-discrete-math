@@ -35,7 +35,7 @@ VPTree* constructTreeFromFile(string filename) {
 }
 
 vector<string> findSimilar(string str, VPTree *tree) {
-    const int unsigned SIMILAR_COUNT = 3;
+    const int unsigned SIMILAR_COUNT = 5;
     int l = 0;
     int r = str.length();
     while (r - l > 1) {
@@ -47,7 +47,6 @@ vector<string> findSimilar(string str, VPTree *tree) {
             l = m;
     }
     vector<string> result = tree->findNearest(str, l);
-    result = tree->findNearest(str, str.length());
     sort(result.begin(), result.end(), [&](string a, string b) {
         return (tree->getDist())(a, str) < (tree->getDist())(b, str);
     });
