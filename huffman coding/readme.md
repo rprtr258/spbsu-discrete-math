@@ -1,6 +1,6 @@
-Huffman encoding algorithm implementation.
+# Huffman encoding algorithm implementation.
 
-# Usage:
+## Usage:
 
 rename file which should be encoded as **file.txt** and run
 ~~~~~~
