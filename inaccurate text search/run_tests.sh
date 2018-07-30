@@ -7,7 +7,7 @@ function runTest() {
     rm actual expected
 }
 
-g++ -g -std=c++11 -Wall -Wextra main.cpp VPTree.cpp Node.cpp metrics.cpp
+make
 runTest "kapa" "Kappa[1], Kippa[2], KAPOW[2], Kappu[2]"
 runTest "Kppa" "Kippa[1], Kappa[1], Kappu[2], Keepo[3], KAPOW[3]"
 runTest "SeemsGood" "SeemsGood[0], Keepo[6], SMOrc[6]"
