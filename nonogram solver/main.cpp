@@ -135,7 +135,7 @@ vector<int> boundsIntersectionMethod(vector<int> row, vector<int> cur) {
             int beg = l;
             while (firstZero(cur, beg, row[i]) < cur.size())
                 beg = firstZero(cur, beg, row[i]) + 1;
-            //while (cur[i + row[ptr]] == 1)
+            //while (beg + row[ptr] < cur.size() && cur[beg + row[ptr]] == 1)
             //    beg++;
             l = beg + row[i] + 1;
         }
@@ -143,6 +143,7 @@ vector<int> boundsIntersectionMethod(vector<int> row, vector<int> cur) {
             int end = r;
             while (firstZero(cur, end - row[i] + 1, row[i]) < cur.size())
                 end--;
+            // same
             r = end - row[i] - 1;
         }
         while (l < cur.size() && cur[l] == 0)
@@ -185,7 +186,7 @@ bool check(vector<int> row, vector<int> cur) {
 }
 
 vector<int> intersectVariants(vector<vector<int>> &v) {
-    //assert(v.size() > 0);
+    assert(v.size() > 0);
     vector<int> result = v[0];
     for (vector<int> variant : v) {
         for (int i = 0; i < result.size(); i++) {
