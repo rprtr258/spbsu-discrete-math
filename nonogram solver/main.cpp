@@ -8,12 +8,39 @@ using namespace std;
 int width, height;
 vector<vector<int>> rows;
 vector<vector<int>> cols;
+vector<vector<vector<int>>> rowsVariants;
+vector<vector<vector<int>>> colsVariants;
 /* -1 undefined cell
  * 0 empty cell
  * 1 filled cell
  */
 vector<vector<int>> data;
-vector<int> debugRow = vector<int>({3, 1, 3});
+
+vector<int> getRow(int i) {
+    vector<int> result(width);
+    for (int j = 0; j < width; j++)
+        result[j] = data[i][j];
+    return result;
+}
+
+vector<int> getCol(int j) {
+    vector<int> result(height);
+    for (int i = 0; i < height; i++)
+        result[i] = data[i][j];
+    return result;
+}
+
+void updateRow(int i, vector<int> rowUpdate) {
+    for (int j = 0; j < width; j++)
+        if (data[i][j] == -1)
+            data[i][j] = rowUpdate[j];
+}
+
+void updateCol(int j, vector<int> colUpdate) {
+    for (int i = 0; i < height; i++)
+        if (data[i][j] == -1)
+            data[i][j] = colUpdate[i];
+}
 
 void printSolution() {
     for (int j = 0; j < width + 1 + width / 5; j++)
@@ -22,7 +49,7 @@ void printSolution() {
     for (int i = 0; i < height; i++) {
         cout << "\"";
         for (int j = 0; j < width; j++) {
-            cout << " X#"[data[i][j] + 1];
+            cout << "  #"[data[i][j] + 1];
             if (j + 1 < width && (j + 1) % 5 == 0)
                 cout << "|";
         }
@@ -108,6 +135,8 @@ vector<int> boundsIntersectionMethod(vector<int> row, vector<int> cur) {
             int beg = l;
             while (firstZero(cur, beg, row[i]) < cur.size())
                 beg = firstZero(cur, beg, row[i]) + 1;
+            //while (cur[i + row[ptr]] == 1)
+            //    beg++;
             l = beg + row[i] + 1;
         }
         for (int i = row.size() - 1; i > ptr; i--) {
@@ -122,32 +151,20 @@ vector<int> boundsIntersectionMethod(vector<int> row, vector<int> cur) {
             r--;
         int freeSpace = r - l + 1;
         int shift = freeSpace - row[ptr];
-        for (int j = l + shift; j <= r - shift; j++)
-            result[j] = 1;
+        if (l + shift <= r - shift)
+            fill(result.begin() + l + shift, result.begin() + r - shift + 1, 1);
     }
     return result;
 }
 
 void boundsIntersectionMethod() {
     for (int i = 0; i < height; i++) {
-        const vector<int> &row = rows[i];
-        vector<int> curRow(width);
-        for (int j = 0; j < width; j++)
-            curRow[j] = data[i][j];
-        vector<int> rowUpdate = boundsIntersectionMethod(row, curRow);
-        for (int j = 0; j < width; j++)
-            if (data[i][j] == -1)
-                data[i][j] = rowUpdate[j];
+        vector<int> rowUpdate = boundsIntersectionMethod(rows[i], getRow(i));
+        updateRow(i, rowUpdate);
     }
     for (int j = 0; j < width; j++) {
-        const vector<int> &col = cols[j];
-        vector<int> curCol(height);
-        for (int i = 0; i < height; i++)
-            curCol[i] = data[i][j];
-        vector<int> colUpdate = boundsIntersectionMethod(col, curCol);
-        for (int i = 0; i < height; i++)
-            if (data[i][j] == -1)
-                data[i][j] = colUpdate[i];
+        vector<int> colUpdate = boundsIntersectionMethod(cols[j], getCol(j));
+        updateCol(j, colUpdate);
     }
 }
 
@@ -164,30 +181,35 @@ bool check(vector<int> row, vector<int> cur) {
     }
     if (x > 0)
         cnt.push_back(x);
-    //if (row == debugRow) {
-    //    for (int y : cur)
-    //        cout << " X#"[y + 1];
-    //    cout << ' ' << (cnt == row ? "correct" : "incorrect") << endl;
-    //    for (int y : cnt)
-    //        cout << y << ' ';
-    //    cout << endl;
-    //}
-    return cnt == row;
+    return (cnt == row);
 }
 
-vector<vector<int>> bruteforce(vector<int> row, vector<int> cur, vector<int> curState, int ptr = 0, int beg = 0) {
-    int length = cur.size();
+vector<int> intersectVariants(vector<vector<int>> &v) {
+    //assert(v.size() > 0);
+    vector<int> result = v[0];
+    for (vector<int> variant : v) {
+        for (int i = 0; i < result.size(); i++) {
+            if (result[i] != variant[i])
+                result[i] = -1;
+        }
+    }
+    return result;
+}
+
+vector<vector<int>> bruteforce(vector<int> row, vector<int> state, int ptr = 0, int beg = 0) {
+    int length = state.size();
     vector<vector<int>> variants;
     for (int i = beg; i <= length - row[ptr]; i++) {
-        if (firstZero(curState, i, row[ptr]) < length) {
-            i = firstZero(curState, i, row[ptr]);
+        if (firstZero(state, i, row[ptr]) < length) {
+            i = firstZero(state, i, row[ptr]);
             continue;
         }
-        vector<int> newState = curState;
-        for (int j = 0; j < row[ptr]; j++)
-            newState[i + j] = 1;
+        //while (state[i + row[ptr]] == 1)
+        //    i++;
+        vector<int> newState = state;
+        fill(newState.begin() + i, newState.begin() + i + row[ptr], 1);
         if (ptr + 1 < row.size()) {
-            vector<vector<int>> newVariants = bruteforce(row, cur, newState, ptr + 1, i + row[ptr] + 1);
+            vector<vector<int>> newVariants = bruteforce(row, newState, ptr + 1, i + row[ptr] + 1);
             for (vector<int> variant : newVariants)
                 variants.push_back(variant);
         } else {
@@ -199,73 +221,100 @@ vector<vector<int>> bruteforce(vector<int> row, vector<int> cur, vector<int> cur
         }
     }
     if (ptr == 0) {
-        vector<int> result = cur;
-        if (variants.size() > 0)
-            result = variants[0];
-        else
-            return vector<vector<int>>();
-        for (vector<int> variant : variants) {
-            for (int i = 0; i < length; i++) {
-                if (result[i] != variant[i] and result[i] != -1)
-                    result[i] = -1;
-            }
-        }
-        //if (row == debugRow) {
-        //    cout << "INTERSECTION" << endl;
-        //    cout << "\"";
-        //    for (int y : result)
-        //        cout << " X#"[y + 1];
-        //    cout << "\"" << endl;
-        //}
-        return vector<vector<int>>({result});
+        variants.push_back(intersectVariants(variants));
+        return variants;
     }
     return variants;
 }
 
 void bruteforce() {
     for (int i = 0; i < height; i++) {
-        const vector<int> &row = rows[i];
-        vector<int> curRow(width);
-        for (int j = 0; j < width; j++)
-            curRow[j] = data[i][j];
-        auto tmp = bruteforce(row, curRow, curRow);
-        if (tmp.size() > 0) {
-            vector<int> rowUpdate = tmp[0];
-            for (int j = 0; j < width; j++)
-                if (data[i][j] == -1 and rowUpdate[j] >= 0)
-                    data[i][j] = rowUpdate[j];
-        }
+        auto tmp = bruteforce(rows[i], getRow(i));
+        updateRow(i, tmp.back());
+        tmp.pop_back();
+        rowsVariants.push_back(tmp);
     }
     for (int j = 0; j < width; j++) {
-        const vector<int> &col = cols[j];
-        vector<int> curCol(height);
-        for (int i = 0; i < height; i++)
-            curCol[i] = data[i][j];
-        auto tmp = bruteforce(col, curCol, curCol);
-        if (tmp.size() > 0) {
-            vector<int> colUpdate = tmp[0];
-            for (int i = 0; i < height; i++)
-                if (data[i][j] == -1 and colUpdate[i] >= 0)
-                    data[i][j] = colUpdate[i];
-        }
+        auto tmp = bruteforce(cols[j], getCol(j));
+        updateCol(j, tmp.back());
+        tmp.pop_back();
+        colsVariants.push_back(tmp);
     }
 }
 
-bool isSolved() {
+vector<int> bruteforceSelect(vector<int> row, vector<int> cur, vector<vector<int>> &variants) {
+    vector<vector<int>> newVariants;
+    for (vector<int> variant : variants) {
+        bool valid = true;
+        vector<int> modifiedVariant = variant;
+        for (int i = 0; i < cur.size(); i++)
+            if (cur[i] != -1 && modifiedVariant[i] != cur[i])
+                valid = false;
+        valid &= check(row, modifiedVariant);
+        if (valid)
+            newVariants.push_back(modifiedVariant);
+    }
+    variants = newVariants;
+    vector<int> result = intersectVariants(variants);
+    return result;
+}
+
+void bruteforceSelect() {
+    for (int i = 0; i < height; i++) {
+        vector<int> rowUpdate = bruteforceSelect(rows[i], getRow(i), rowsVariants[i]);
+        updateRow(i, rowUpdate);
+    }
+    for (int j = 0; j < width; j++) {
+        vector<int> colUpdate = bruteforceSelect(cols[j], getCol(j), colsVariants[j]);
+        updateCol(j, colUpdate);
+    }
+}
+
+int getProgress() {
+    int result = 0;
     for (int i = 0; i < height; i++)
         for (int j = 0; j < width; j++)
-            if (data[i][j] == -1)
-                return false;
-    return true;
+            result += (data[i][j] != -1);
+    return result;
+}
+
+void printProgress() {
+    int progress = getProgress();
+    cout << progress << "/" << width * height << endl;
+    cout.flush();
+}
+
+bool isSolved() {
+    return (getProgress() == width * height);
+}
+
+void runTillStabilize(auto getStatus, void (*proccess)()) {
+    int curStatus = getStatus();
+    cout << curStatus << "/" << width * height << endl;
+    cout.flush();
+    while (true) {
+        proccess();
+        int newStatus = getStatus();
+        if (newStatus != curStatus) {
+            curStatus = newStatus;
+            cout << curStatus << "/" << width * height << endl;
+            cout.flush();
+        } else {
+            break;
+        }
+    }
 }
 
 int main() {
     readTask();
     //readData(); //use to start from partial solution
+    runTillStabilize(getProgress, boundsIntersectionMethod);
+    bruteforce();
     while (!isSolved()) {
-        boundsIntersectionMethod();
-        bruteforce();
+        runTillStabilize(getProgress, boundsIntersectionMethod);
+        bruteforceSelect();
     }
+    printProgress();
     printSolution();
     return 0;
 }
