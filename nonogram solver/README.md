@@ -7,3 +7,5 @@ Then execute
 ~~~~~~
 g++ main.cpp && cat i | ./a.exe && rm a.exe
 ~~~~~~
+
+### Time on given test: *22m31.405s*
