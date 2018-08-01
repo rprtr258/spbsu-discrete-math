@@ -1,5 +1,6 @@
 g++ -O3 main.cpp
-time cat i | ./a.exe | tee actual
+time  ./a.exe -in i -out actual -f
+cat actual
 cmp actual o
 rm actual
 rm a.exe

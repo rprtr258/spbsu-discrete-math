@@ -2,6 +2,7 @@
 #include <vector>
 #include <algorithm>
 #include <cassert>
+#include <cstring>
 
 using namespace std;
 
@@ -10,6 +11,7 @@ vector<vector<int>> rows;
 vector<vector<int>> cols;
 vector<vector<vector<int>>> rowsVariants;
 vector<vector<vector<int>>> colsVariants;
+bool doVerbose = false;
 /* -1 undefined cell
  * 0 empty cell
  * 1 filled cell
@@ -42,28 +44,40 @@ void updateCol(int j, vector<int> colUpdate) {
             data[i][j] = colUpdate[i];
 }
 
-void printSolution() {
-    for (int j = 0; j < width + 1 + width / 5; j++)
-        cout << "\"";
-    cout << endl;
+void printSolution(const bool &doFormat) {
+    if (doFormat) {
+        for (int j = 0; j < width + 1 + width / 5; j++)
+            cout << "\"";
+        cout << endl;
+    }
     for (int i = 0; i < height; i++) {
-        cout << "\"";
+        if (doFormat) {
+            cout << "\"";
+        }
         for (int j = 0; j < width; j++) {
             cout << "  #"[data[i][j] + 1];
-            if (j + 1 < width && (j + 1) % 5 == 0)
-                cout << "|";
+            if (doFormat) {
+                if (j + 1 < width && (j + 1) % 5 == 0)
+                    cout << "|";
+            }
         }
-        cout << "\"" << endl;
-        if (i + 1 < height && (i + 1) % 5 == 0) {
-            cout << "\"";
-            for (int j = 0; j < width + width / 5 - 1; j++)
-                cout << "-";
+        if (doFormat) {
             cout << "\"" << endl;
+            if (i + 1 < height && (i + 1) % 5 == 0) {
+                cout << "\"";
+                for (int j = 0; j < width + width / 5 - 1; j++)
+                    cout << "-";
+                cout << "\"" << endl;
+            }
+        } else {
+            cout << endl;
         }
     }
-    for (int j = 0; j < width + 1 + width / 5; j++)
-        cout << "\"";
-    cout << endl;
+    if (doFormat) {
+        for (int j = 0; j < width + 1 + width / 5; j++)
+            cout << "\"";
+        cout << endl;
+    }
 }
 
 vector<int> parseString(string s) {
@@ -280,9 +294,11 @@ int getProgress() {
 }
 
 void printProgress() {
-    int progress = getProgress();
-    cout << progress << "/" << width * height << endl;
-    cout.flush();
+    if (doVerbose) {
+        int progress = getProgress();
+        cout << progress << "/" << width * height << endl;
+        cout.flush();
+    }
 }
 
 bool isSolved() {
@@ -291,24 +307,58 @@ bool isSolved() {
 
 void runTillStabilize(auto getStatus, void (*proccess)()) {
     int curStatus = getStatus();
-    cout << curStatus << "/" << width * height << endl;
-    cout.flush();
+    printProgress();
     while (true) {
         proccess();
         int newStatus = getStatus();
         if (newStatus != curStatus) {
             curStatus = newStatus;
-            cout << curStatus << "/" << width * height << endl;
-            cout.flush();
+            printProgress();
         } else {
             break;
         }
     }
 }
 
-int main() {
+int main(int argc, char ** argv) {
+    bool doReadPartial = false;
+    bool doFormat = false;
+    for (int i = 1; i < argc; i++) {
+        if (strcmp("--help", argv[i]) == 0) {
+            cout << "--help - shows that list" << endl;
+            cout << "-in - specify input file" << endl;
+            cout << "-out - specify output file" << endl;
+            cout << "-p - read partial solution in the end of input" << endl;
+            cout << "-f - format solution dividing it into 5x5 squares" << endl;
+            cout << "-v - verbose progress" << endl;
+        }
+        if (strcmp("-in", argv[i]) == 0) {
+            if (i + 1 < argc) {
+                freopen(argv[i + 1], "r", stdin);
+                i++;
+            } else
+                cout << "No input file specified.";
+        }
+        if (strcmp("-out", argv[i]) == 0) {
+            if (i + 1 < argc) {
+                freopen(argv[i + 1], "w", stdout);
+                i++;
+            } else
+                cout << "No output file specified.";
+        }
+        if (strcmp("-p", argv[i]) == 0) {
+            doReadPartial = true;
+        }
+        if (strcmp("-f", argv[i]) == 0) {
+            doFormat = true;
+        }
+        if (strcmp("-v", argv[i]) == 0) {
+            doVerbose = true;
+        }
+    }
     readTask();
-    //readData(); //use to start from partial solution
+    if (doReadPartial)
+        readData();
     runTillStabilize(getProgress, boundsIntersectionMethod);
     bruteforce();
     while (!isSolved()) {
@@ -316,6 +366,6 @@ int main() {
         bruteforceSelect();
     }
     printProgress();
-    printSolution();
+    printSolution(doFormat);
     return 0;
 }
