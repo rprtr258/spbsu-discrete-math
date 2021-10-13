@@ -1,0 +1,44 @@
+version: '3'
+
+tasks:
+  default:
+    - task: build
+  build_dir:
+    - mkdir -p build
+  build_main:
+    deps: [build_dir]
+    sources: [src/main.cpp]
+    generates: [build/main.o]
+    cmds:
+      - g++ -c src/main.cpp -o build/main.o
+  build_metrics:
+    deps: [build_dir]
+    sources: [src/metrics.cpp]
+    generates: [build/metrics.o]
+    cmds:
+      - g++ -c src/metrics.cpp -o build/metrics.o
+  build_node:
+    deps: [build_dir]
+    sources: [src/Node.cpp]
+    generates: [build/Node.o]
+    cmds:
+      - g++ -c src/Node.cpp -o build/Node.o
+  build_vptree:
+    deps: [build_dir]
+    sources: [src/VPTree.cpp]
+    generates: [build/VPTree.o]
+    cmds:
+      - g++ -c src/VPTree.cpp -o build/VPTree.o
+  build:
+    deps:
+      - build_main
+      - build_metrics
+      - build_node
+      - build_vptree
+    dir: build
+    generates: [../main.exe]
+    cmds:
+      - g++ *.o -o ../main.exe
+  clean:
+    - rm -rf build
+    - rm main.exe

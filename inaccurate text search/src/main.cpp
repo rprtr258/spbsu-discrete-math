@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+
 #include "VPTree.h"
 #include "metrics.h"
 
@@ -53,19 +54,33 @@ vector<string> findSimilar(string str, VPTree *tree) {
     return result;
 }
 
-int main() {
+int main(int argc, char** argv) {
+    if (argc < 2) {
+        cout << "Dictionary file was not provided." << endl;
+        cout << "Usage: " << argv[0] << " dict.txt" << endl;
+        return 1;
+    }
+    if (argc > 2) {
+        cout << "Too many arguments." << endl;
+        cout << "Usage: " << argv[0] << " dict.txt" << endl;
+        return 1;
+    }
+    ifstream dict(argv[1]);
+    if (!dict.good()) {
+        cout << "Dictionary file '" << argv[1] << "' was not found." << endl;
+        return 1;
+    }
     cout << "Write word to search:" << endl;
     string word;
     cin >> word;
-    VPTree *tree = constructTreeFromFile("dict.in");
+    cout << "Constructing search tree..." << endl;
+    VPTree *tree = constructTreeFromFile(argv[1]);
+    cout << "Tree constructed. Finding similar words..." << endl;
     vector<string> nearest = findSimilar(word, tree);
-    cout << "Nearest words are: {";
+    cout << "Nearest words are:" << endl;
     for (int unsigned i = 0; i < nearest.size(); i++) {
-        cout << nearest[i] << "[" << (tree->getDist())(word, nearest[i]) << "]";
-        if (i < nearest.size() - 1)
-            cout << ", ";
+        cout << nearest[i] << "[" << (tree->getDist())(word, nearest[i]) << "]" << endl;
     }
-    cout << "}" << endl;
     delete tree;
     return 0;
 }
