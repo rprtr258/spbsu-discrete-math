@@ -3,12 +3,8 @@
 
 #include "VPTree.h"
 
-VPTree::VPTree(vector<string>&& list, MetricFunction strDist) {
-    dist = strDist;
-    data = list;
-    outer.resize(list.size(), list.size());
-    radius.resize(list.size(), 0);
-    has_inner.resize(list.size(), false);
+VPTree::VPTree(vector<string>&& list, MetricFunction strDist) :
+    dist(strDist), data(list), outer(list.size(), list.size()), radius(list.size(), 0), has_inner(list.size(), false) {
     init_self(list.begin(), list.end(), 0);
 }
 
@@ -32,9 +28,6 @@ void VPTree::init_self(vector<string>::iterator l, vector<string>::iterator r, c
         outer[node] = node_outer;
         init_self(i, r, node_outer);
     }
-}
-
-VPTree::~VPTree() {
 }
 
 vector<string> VPTree::_findNearest(const string &str, int prec, const int node) const {

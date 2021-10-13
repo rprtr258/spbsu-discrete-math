@@ -19,7 +19,6 @@ class VPTree {
         int _countNearest(const string&, int, const int) const;
     public:
         VPTree(vector<string>&&, MetricFunction);
-        ~VPTree();
         
         vector<string> findNearest(const string&, int) const;
         int countNearest(const string&, int) const;
