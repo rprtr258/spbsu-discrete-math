@@ -1,8 +1,6 @@
 #pragma once
 #include <string>
 #include <vector>
-#include "Node.h"
-#include "metrics.h"
 
 using namespace std;
 
@@ -10,12 +8,18 @@ typedef int (*MetricFunction)(const string&, const string&);
 
 class VPTree {
     private:
-        Node *root = nullptr;
+        vector<string> data;
+        vector<unsigned> outer;
+        vector<int> radius;
+        vector<bool> has_inner;
         MetricFunction dist = nullptr;
+
+        void init_self(vector<string>::iterator, vector<string>::iterator, const int);
+        vector<string> _findNearest(const string&, int, const int) const;
     public:
         VPTree(vector<string>&&, MetricFunction);
         ~VPTree();
         
-        vector<string> findNearest(string, int);
+        vector<string> findNearest(const string&, int) const;
         MetricFunction getDist();
 };

@@ -23,10 +23,10 @@ VPTree* constructTreeFromFile(string filename) {
     return new VPTree(move(words), editIgnoreCaseDistance);
 }
 
-vector<string> findSimilar(string str, VPTree *tree) {
-    const int unsigned SIMILAR_COUNT = 5;
+vector<string> findSimilar(const string& str, VPTree *tree) {
+    const int unsigned SIMILAR_COUNT = 20;
     int l = 0;
-    int r = str.length();
+    int r = str.length() * 10;
     while (r - l > 1) {
         int m = (l + r) / 2;
         vector<string> adj = tree->findNearest(str, m);
