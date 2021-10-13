@@ -29,8 +29,8 @@ vector<string> findSimilar(const string& str, VPTree *tree) {
     int r = str.length() * 10;
     while (r - l > 1) {
         int m = (l + r) / 2;
-        vector<string> adj = tree->findNearest(str, m);
-        if (adj.size() > SIMILAR_COUNT)
+        int adjCount = tree->countNearest(str, m);
+        if (adjCount > SIMILAR_COUNT)
             r = m;
         else
             l = m;

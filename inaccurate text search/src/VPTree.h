@@ -16,10 +16,12 @@ class VPTree {
 
         void init_self(vector<string>::iterator, vector<string>::iterator, const int);
         vector<string> _findNearest(const string&, int, const int) const;
+        int _countNearest(const string&, int, const int) const;
     public:
         VPTree(vector<string>&&, MetricFunction);
         ~VPTree();
         
         vector<string> findNearest(const string&, int) const;
+        int countNearest(const string&, int) const;
         MetricFunction getDist();
 };
