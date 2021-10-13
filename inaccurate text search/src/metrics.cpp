@@ -1,17 +1,16 @@
 #include "metrics.h"
 #include <vector>
+#include <iostream>
 
 int editIgnoreCaseDistance(const string& str1, const string& str2) {
     string str1Copy = str1;
     string str2Copy = str2;
-    for (int unsigned i = 0; i < str1Copy.length(); i++)
-        if ('A' <= str1Copy[i] && str1Copy[i] <= 'Z')
-            str1Copy[i] = str1Copy[i] - 'A' + 'a';
-    
-    for (int unsigned i = 0; i < str2Copy.length(); i++)
-        if ('A' <= str2Copy[i] && str2Copy[i] <= 'Z')
-            str2Copy[i] = str2Copy[i] - 'A' + 'a';
-    
+    for (char &c : str1Copy)
+        if ('A' <= c && c <= 'Z')
+            c = c - 'A' + 'a';
+    for (char &c : str2Copy)
+        if ('A' <= c && c <= 'Z')
+            c = c - 'A' + 'a';
     return editDistance(str1Copy, str2Copy);
 }
 
@@ -35,28 +34,27 @@ int editDistance(const string& str1, const string& str2) {
     if (n == 0) {
         return m;
     }
+    static int V[200];
+    int x, y;
+    int offset = str1.size();
+    V[offset + 1] = 0;
 
-    std::vector<std::vector<unsigned>> matrix(m + 1);
-
-    for (int unsigned i = 0; i <= m; ++i) {
-        matrix[i].resize(n + 1);
-        matrix[i][0] = i;
-    }
-    for (int unsigned i = 0; i <= n; ++i) {
-        matrix[0][i] = i;
-    }
-
-    int unsigned above_cell, left_cell, diagonal_cell, cost;
-
-    for (int unsigned i = 1; i <= m; ++i) {
-        for(int unsigned j = 1; j <= n; ++j) {
-            cost = str1[i - 1] == str2[j - 1] ? 0 : 1;
-            above_cell = matrix[i - 1][j];
-            left_cell = matrix[i][j - 1];
-            diagonal_cell = matrix[i - 1][j - 1];
-            matrix[i][j] = std::min(std::min(above_cell + 1, left_cell + 1), diagonal_cell + cost);
+    for (int D = 0; D <= str1.size() + str2.size(); D++) {
+        for (int k = -D; k <= D; k += 2) {
+            if (k == -D || k != D && V[k-1+offset] < V[k+1+offset])
+                x = V[k+1+offset];
+            else
+                x = V[k-1+offset] + 1;
+            y = x - k;
+            while (x < str1.size() && y < str2.size() && str1[x] == str2[y]) {
+                x++;
+                y++;
+            }
+            V[k+offset] = x;
+            if (x >=  str1.size() && y >= str2.size()) return D;
         }
     }
 
-    return matrix[m][n];
+    std::cout << "WTF" << std::endl;
+    return -1;
 }

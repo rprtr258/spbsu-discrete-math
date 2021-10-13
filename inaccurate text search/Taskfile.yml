@@ -42,6 +42,8 @@ tasks:
   clean:
     - rm -rf build
     - rm main.exe
+  bench-only:
+    - time echo "Frog" | ./main.exe bttv1000.txt
   bench:
     - task: build
-    - time echo "Frog" | ./main.exe bttv1000.txt
+    - task: bench-only
