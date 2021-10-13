@@ -59,28 +59,6 @@ vector<string> VPTree::findNearest(const string& str, int prec) const {
     return _findNearest(str, prec, 0);
 }
 
-int VPTree::_countNearest(const string &str, int prec, const int node) const {
-    int d = dist(data[node], str);
-    int result = 0;
-    
-    if (d <= prec)
-       result++;
-    
-    if (d - prec <= radius[node] && has_inner[node]) {
-        result += _countNearest(str, prec, node + 1);
-    }
-    
-    if (d + prec >= radius[node] && (data.size() - outer[node]) != 0) {
-        result += _countNearest(str, prec, outer[node]);
-    }
-    
-    return result;
-}
-
-int VPTree::countNearest(const string& str, int prec) const {
-    return _countNearest(str, prec, 0);
-}
-
 MetricFunction VPTree::getDist() {
     return dist;
 }
