@@ -9,18 +9,6 @@
 
 using namespace std;
 
-int editIgnoreCaseDistance(string str1, string str2) {
-    for (int unsigned i = 0; i < str1.length(); i++)
-        if ('A' <= str1[i] && str1[i] <= 'Z')
-            str1[i] = str1[i] - 'A' + 'a';
-    
-    for (int unsigned i = 0; i < str2.length(); i++)
-        if ('A' <= str2[i] && str2[i] <= 'Z')
-            str2[i] = str2[i] - 'A' + 'a';
-    
-    return editDistance(str1, str2);
-}
-
 VPTree* constructTreeFromFile(string filename) {
     vector<string> words;
     ifstream fin(filename);
@@ -29,10 +17,10 @@ VPTree* constructTreeFromFile(string filename) {
         fin >> newWord;
         if (fin.eof())
             break;
-        words.push_back(newWord);
+        words.emplace_back(newWord);
     }
     sort(words.begin(), words.end());
-    return new VPTree(words, editIgnoreCaseDistance);
+    return new VPTree(move(words), editIgnoreCaseDistance);
 }
 
 vector<string> findSimilar(string str, VPTree *tree) {

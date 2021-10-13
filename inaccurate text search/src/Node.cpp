@@ -1,39 +1,31 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+
 #include "Node.h"
 
 using namespace std;
 
-Node::Node(vector<string> &list, int l, int r, int (*strDist)(string, string)) {
+Node::Node(vector<string>::iterator l, vector<string>::iterator r, MetricFunction strDist) {
     dist = strDist;
-    if (r == l + 1) {
+    data = *l;
+
+    if (distance(l, r) == 1) {
         radius = 0;
-        data = list[l];
         return;
     }
     
-    string vantage = list[l];
-    data = vantage;
-    radius = dist(vantage, list[r - 1]) / 2;
+    radius = dist(data, *prev(r, 1)) / 2;
     
-    partition(list.begin() + l + 1, list.begin() + r, [&](string s){
-        return dist(s, vantage) <= radius;
+    vector<string>::iterator i = partition(next(l), r, [&](string s){
+        return dist(s, data) <= radius;
     });
     
-    int i = l + 1;
-    while (i < r && dist(list[i], vantage) <= radius)
-        i++;
+    if (distance(l, i) > 1)
+        inner = new Node(next(l), i, strDist);
     
-    if (i == l + 1)
-        inner = nullptr;
-    else
-        inner = new Node(list, l + 1, i, strDist);
-    
-    if (i == r)
-        outer = nullptr;
-    else
-        outer = new Node(list, i, r, strDist);
+    if (distance(i, r) > 0)
+        outer = new Node(i, r, strDist);
 }
 
 Node::~Node() {

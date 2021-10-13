@@ -6,14 +6,14 @@
 
 using namespace std;
 
-typedef int (*MetricFunction)(string, string);
+typedef int (*MetricFunction)(const string&, const string&);
 
 class VPTree {
     private:
         Node *root = nullptr;
         MetricFunction dist = nullptr;
     public:
-        VPTree(vector<string>&, MetricFunction);
+        VPTree(vector<string>&&, MetricFunction);
         ~VPTree();
         
         vector<string> findNearest(string, int);

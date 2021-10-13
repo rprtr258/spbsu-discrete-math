@@ -10,25 +10,25 @@ tasks:
     sources: [src/main.cpp]
     generates: [build/main.o]
     cmds:
-      - g++ -c src/main.cpp -o build/main.o
+      - g++ -std=c++17 -c src/main.cpp -o build/main.o
   build_metrics:
     deps: [build_dir]
     sources: [src/metrics.cpp]
     generates: [build/metrics.o]
     cmds:
-      - g++ -c src/metrics.cpp -o build/metrics.o
+      - g++ -std=c++17 -c src/metrics.cpp -o build/metrics.o
   build_node:
     deps: [build_dir]
     sources: [src/Node.cpp]
     generates: [build/Node.o]
     cmds:
-      - g++ -c src/Node.cpp -o build/Node.o
+      - g++ -std=c++17 -c src/Node.cpp -o build/Node.o
   build_vptree:
     deps: [build_dir]
     sources: [src/VPTree.cpp]
     generates: [build/VPTree.o]
     cmds:
-      - g++ -c src/VPTree.cpp -o build/VPTree.o
+      - g++ -std=c++17 -c src/VPTree.cpp -o build/VPTree.o
   build:
     deps:
       - build_main
@@ -42,3 +42,6 @@ tasks:
   clean:
     - rm -rf build
     - rm main.exe
+  bench:
+    - task: build
+    - time echo "Frog" | ./main.exe bttv1000.txt

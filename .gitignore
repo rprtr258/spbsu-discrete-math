@@ -1,11 +1,4 @@
-*.cbp
-*.depend
-*.layout
-*.exe
-*.o
-*.bak
-*.un~
-*.h~
-*.cpp~
-*.gch
-*.out
+.vscode/
+.task/
+build/
+main.exe
