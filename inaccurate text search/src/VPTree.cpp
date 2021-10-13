@@ -13,7 +13,10 @@ void VPTree::init_self(vector<string>::iterator l, vector<string>::iterator r, c
         return;
     }
     
-    radius[node] = dist(*l, *prev(r, 1)) / 2;
+    int dist_sum = 0;
+    for (auto j = l; j != r; j++)
+        dist_sum += dist(*l, *j);
+    radius[node] = dist_sum / distance(l, r);
     
     vector<string>::iterator i = partition(next(l), r, [&](string s){
         return dist(s, *l) <= radius[node];

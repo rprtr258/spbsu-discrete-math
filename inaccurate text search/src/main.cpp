@@ -19,23 +19,11 @@ VPTree* constructTreeFromFile(string filename) {
             break;
         words.emplace_back(newWord);
     }
-    sort(words.begin(), words.end());
     return new VPTree(move(words), editIgnoreCaseDistance);
 }
 
 vector<string> findSimilar(const string& str, VPTree *tree) {
-    const int unsigned SIMILAR_COUNT = 20;
-    int l = 0;
-    int r = str.length() * 10;
-    while (r - l > 1) {
-        int m = (l + r) / 2;
-        int adjCount = tree->countNearest(str, m);
-        if (adjCount > SIMILAR_COUNT)
-            r = m;
-        else
-            l = m;
-    }
-    vector<string> result = tree->findNearest(str, l);
+    vector<string> result = tree->findNearest(str, str.length());
     sort(result.begin(), result.end(), [&](string a, string b) {
         return (tree->getDist())(a, str) < (tree->getDist())(b, str);
     });
