@@ -78,8 +78,8 @@ int main(int argc, char** argv) {
     cout << "Tree constructed. Finding similar words..." << endl;
     vector<string> nearest = findSimilar(word, tree);
     cout << "Nearest words are:" << endl;
-    for (int unsigned i = 0; i < nearest.size(); i++) {
-        cout << nearest[i] << "[" << (tree->getDist())(word, nearest[i]) << "]" << endl;
+    for (const string& neighbour : nearest) {
+        cout << neighbour << "[" << (tree->getDist())(word, neighbour) << "]" << endl;
     }
     delete tree;
     return 0;
