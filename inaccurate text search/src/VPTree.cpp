@@ -11,7 +11,7 @@ VPTree::~VPTree() {
 }
 
 vector<string> VPTree::findNearest(string str, int prec) {
-    return root->findNearest(str, prec);
+    return root->findNearest(str, prec, dist);
 }
 
 MetricFunction VPTree::getDist() {

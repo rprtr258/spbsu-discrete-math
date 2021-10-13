@@ -7,7 +7,6 @@
 using namespace std;
 
 Node::Node(vector<string>::iterator l, vector<string>::iterator r, MetricFunction strDist) {
-    dist = strDist;
     data = *l;
 
     if (distance(l, r) == 1) {
@@ -15,10 +14,10 @@ Node::Node(vector<string>::iterator l, vector<string>::iterator r, MetricFunctio
         return;
     }
     
-    radius = dist(data, *prev(r, 1)) / 2;
+    radius = strDist(data, *prev(r, 1)) / 2;
     
     vector<string>::iterator i = partition(next(l), r, [&](string s){
-        return dist(s, data) <= radius;
+        return strDist(s, data) <= radius;
     });
     
     if (distance(l, i) > 1)
@@ -35,21 +34,21 @@ Node::~Node() {
         delete outer;
 }
 
-vector<string> Node::findNearest(string str, int prec) {
-    int d = dist(data, str);
+vector<string> Node::findNearest(string str, int prec, MetricFunction strDist) {
+    int d = strDist(data, str);
     vector<string> result;
     
     if (d <= prec)
        result.push_back(data);
     
     if (d + prec >= radius && outer != nullptr) {
-        vector<string> add = outer->findNearest(str, prec);
+        vector<string> add = outer->findNearest(str, prec, strDist);
         for (string s : add)
             result.push_back(s);
     }
     
     if (d - prec <= radius && inner != nullptr) {
-        vector<string> add = inner->findNearest(str, prec);
+        vector<string> add = inner->findNearest(str, prec, strDist);
         for (string s : add)
             result.push_back(s);
     }
